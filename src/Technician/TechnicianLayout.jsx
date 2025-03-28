@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import TechnicianHeader from "./Dashboard/TechnicianHeader";
+import TechnicianHeader from "./TechnicianHeader";
 import TechnicianTabs from "./TechnicianTabs";
 
 const TechnicianLayout = () => {

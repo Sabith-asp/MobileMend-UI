@@ -40,6 +40,9 @@ const SelectAddress = () => {
         <FaPlus />
         <span className="ml-2">Add Address</span>
       </button>
+      <Modal isOpen={false} head={`Select Address`}>
+        <AddAddress />
+      </Modal>
     </div>
   );
 };
