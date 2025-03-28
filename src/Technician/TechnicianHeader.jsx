@@ -10,6 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Modal from "@/Components/Modal/Modal";
+import TechnicianProfile from "./TechnicianProfile";
 // import { toast } from "sonner";
 // import ProfileSettings from "./ProfileSettings";
 
@@ -17,6 +19,7 @@ const TechnicianHeader = () => {
   const [status, setStatus] = useState("online");
   const [technicianName, setTechnicianName] = useState("Jasim");
   const [technicianLocation, setTechnicianLocation] = useState("Kozhikode");
+  const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
 
   const statusColors = {
     online: "bg-green-500",
@@ -33,6 +36,10 @@ const TechnicianHeader = () => {
   const changeStatus = (newStatus) => {
     setStatus(newStatus);
     toast.success(`Status updated to ${statusText[newStatus]}`);
+  };
+
+  const closeUpdateProfile = () => {
+    setIsUpdateProfileOpen(false);
   };
 
   return (
@@ -92,11 +99,21 @@ const TechnicianHeader = () => {
           variant="outline"
           className="sghdfsdjkfdgsdg"
           size="sm"
-          onClick={() => {}}
+          onClick={() => {
+            setIsUpdateProfileOpen(true);
+            console.log(isUpdateProfileOpen);
+          }}
         >
           <MdOutlineSettings className="mr-2 h-4 w-4" />
           Settings
         </Button>
+        <Modal
+          isOpen={isUpdateProfileOpen}
+          head="Profile Settings"
+          onClose={closeUpdateProfile}
+        >
+          <TechnicianProfile />
+        </Modal>
       </div>
     </div>
   );

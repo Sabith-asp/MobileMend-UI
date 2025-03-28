@@ -18,7 +18,7 @@ const AddSpare = ({ closeSpareModal }) => {
           <h6>Qty</h6>
           <Input />
         </div>
-        <div className="  flex items-center col-span-1">
+        <div className="  flex col-span-1">
           <button className="p-2 border rounded-xl border-gray-400">Add</button>
         </div>
       </div>
@@ -26,7 +26,7 @@ const AddSpare = ({ closeSpareModal }) => {
         <button onClick={closeSpareModal} className="btn-primary-gray">
           Cancel
         </button>
-        <button className="btn-primary-blue">Accept Service</button>
+        <button className="btn-primary-blue">Save Spares</button>
       </div>
     </div>
   );

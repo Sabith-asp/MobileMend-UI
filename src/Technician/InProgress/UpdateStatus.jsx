@@ -1,14 +1,14 @@
+import Modal from "@/Components/Modal/Modal";
 import React, { useState } from "react";
+import ComplitionSummary from "../Completed/CompletionSummary/ComplitionSummary";
 
-const UpdateStatus = ({ closeUpdateModal }) => {
-  const [currentStatus, setCurrentStatus] = useState("pending");
-  const statuses = [
-    { value: "inspecting", label: "Inspecting" },
-    { value: "diagnosing", label: "Diagnosing" },
-    { value: "ordered_parts", label: "Ordered Parts" },
-    { value: "repairing", label: "Repairing" },
-    { value: "testing_completed", label: "Testing Completed" },
-  ];
+const UpdateStatus = ({
+  closeUpdateModal,
+  statuses,
+  setCurrentStatus,
+  updateStatus,
+  currentStatus,
+}) => {
   return (
     <div>
       <div className="grid grid-cols-2 gap-4">
@@ -16,7 +16,7 @@ const UpdateStatus = ({ closeUpdateModal }) => {
           <div
             key={status.value}
             onClick={() => setCurrentStatus(status.value)}
-            className="flex border border-gray-400 rounded-xl  p-2 mt-2 cursor-pointer"
+            className="flex border border-gray-400 rounded-xl p-2 mt-2 cursor-pointer"
           >
             <input
               type="radio"
@@ -36,9 +36,13 @@ const UpdateStatus = ({ closeUpdateModal }) => {
           <button onClick={closeUpdateModal} className="btn-primary-gray">
             Cancel
           </button>
-          <button className="btn-primary-blue">Update Status</button>
+          <button onClick={updateStatus} className="btn-primary-blue">
+            Update Status
+          </button>
         </div>
       </div>
+
+      {/* Summary Modal */}
     </div>
   );
 };

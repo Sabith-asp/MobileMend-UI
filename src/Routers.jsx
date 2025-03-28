@@ -8,6 +8,7 @@ import Login from "./Components/Login/Login";
 import BookedService from "./Components/BookedService/BookedService";
 import TDashboard from "./Technician/Dashboard/TDashboard";
 import TechnicianLayout from "./Technician/TechnicianLayout";
+import AdminLayout from "./Admin/AdminLayout";
 
 const Routers = () => {
   return (
@@ -20,6 +21,7 @@ const Routers = () => {
           <Route path="bookings" element={<BookedService />} />
 
           <Route path="technician" element={<TechnicianLayout />}></Route>
+          <Route path="admin" element={<AdminLayout />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

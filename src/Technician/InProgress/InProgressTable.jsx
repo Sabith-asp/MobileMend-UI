@@ -17,10 +17,31 @@ import { MdOutlineVideocam, MdAccessTime } from "react-icons/md";
 import { BsBoxSeam } from "react-icons/bs";
 import UpdateStatus from "./UpdateStatus";
 import AddSpare from "./AddSpare";
+import ComplitionSummary from "../Completed/CompletionSummary/ComplitionSummary";
 
 const InProgressTable = () => {
   const [reason, setReason] = useState("");
   const [UpdateModalOpen, setUpdateModalOpen] = useState(false);
+  const [openSummaryModal, setOpenSummaryModal] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState({
+    value: "pending",
+    label: "Pending",
+  });
+  const statuses = [
+    { value: "inspecting", label: "Inspecting" },
+    { value: "diagnosing", label: "Diagnosing" },
+    { value: "ordered_parts", label: "Ordered Parts" },
+    { value: "repairing", label: "Repairing" },
+    { value: "testing", label: "Testing" },
+    { value: "completed", label: "Completed" },
+  ];
+
+  const updateStatus = () => {
+    if (currentStatus === "completed") {
+      closeUpdateModal();
+      setOpenSummaryModal(true);
+    }
+  };
 
   const closeUpdateModal = () => {
     setUpdateModalOpen(false);
@@ -45,6 +66,7 @@ const InProgressTable = () => {
             <TableHead>Repair Type</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -106,8 +128,23 @@ const InProgressTable = () => {
                 onClose={closeUpdateModal}
                 head={`Update Repair Status`}
               >
-                <UpdateStatus closeUpdateModal={closeUpdateModal} />
+                <UpdateStatus
+                  statuses={statuses}
+                  closeUpdateModal={closeUpdateModal}
+                  setCurrentStatus={setCurrentStatus}
+                  updateStatus={updateStatus}
+                  currentStatus={currentStatus}
+                />
               </Modal>
+
+              <Modal
+                isOpen={openSummaryModal}
+                onClose={() => setOpenSummaryModal(false)}
+                head="Repair Completion Summary"
+              >
+                <ComplitionSummary />
+              </Modal>
+
               <button
                 onClick={() => setisSpareModal(true)}
                 className="btn-primary-gray p-1 ml-2  items-center flex"
@@ -122,12 +159,16 @@ const InProgressTable = () => {
               >
                 <AddSpare closeSpareModal={closeSpareModal} />
               </Modal>
-              <button className="p-1 border border-gray-400 rounded-md mx-1">
-                <MdAccessTime />
-              </button>
-              <button className="p-1 border border-gray-400 rounded-md">
-                <MdOutlineVideocam />
-              </button>
+            </TableCell>
+            <TableCell>
+              <div className="flex">
+                <button className="p-1 border border-gray-400 rounded-md mx-1">
+                  <MdAccessTime />
+                </button>
+                <button className="p-1 border border-gray-400 rounded-md">
+                  <MdOutlineVideocam />
+                </button>
+              </div>
             </TableCell>
           </TableRow>
         </TableBody>
