@@ -5,6 +5,9 @@ import AdminOverview from "./Dashboard/AdminOverview";
 import AdminDashboard from "./Dashboard/AdminDashboard";
 import BookingsList from "./Bookings/BookingsList";
 import Services from "./Services/Services";
+import Devices from "./Devices/Devices";
+import Technicians from "./Technicians/Technicians";
+import Completed from "./Completed/Completed";
 // import AdminDashboard from "@/components/admin/AdminDashboard";
 // import BookingsList from "@/components/admin/BookingsList";
 // import ServicesManager from "@/components/admin/ServicesManager";
@@ -48,15 +51,15 @@ const AdminLayout = () => {
           </TabsContent>
 
           <TabsContent value="devices" className="space-y-4">
-            {/* <DevicesManager /> */}
+            <Devices />
           </TabsContent>
 
           <TabsContent value="technicians" className="space-y-4">
-            {/* <TechniciansManager /> */}
+            <Technicians />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-4">
-            {/* <OrdersHistory /> */}
+            <Completed />
           </TabsContent>
         </Tabs>
       </div>

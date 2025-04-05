@@ -1,6 +1,8 @@
 import React from "react";
 import { IoCallOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { BsPersonFillGear } from "react-icons/bs";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 const Navbar = () => {
   return (
@@ -31,9 +33,7 @@ const Navbar = () => {
             <li>
               <Link to="/">Home</Link>
             </li>
-            <li>
-              <a>Item 1</a>
-            </li>
+
             {/* <li>
               <a>Parent</a>
               <ul className="p-2">
@@ -49,7 +49,14 @@ const Navbar = () => {
               <Link to="/bookings">Bookings</Link>
             </li>
             <li>
-              <a>Item 4</a>
+              <Link to="/technician">
+                <BsPersonFillGear className="text-xl" />
+              </Link>
+            </li>
+            <li>
+              <Link to="/admin">
+                <MdAdminPanelSettings className="text-xl" />
+              </Link>
             </li>
           </ul>
         </div>
@@ -61,9 +68,6 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link to="/">Home</Link>
-          </li>
-          <li>
-            <a>Item 1</a>
           </li>
           {/* <li>
             <details>
@@ -82,7 +86,14 @@ const Navbar = () => {
             <Link to="/bookings">Bookings</Link>
           </li>
           <li>
-            <a>Item 4</a>
+            <Link to="/technician">
+              <BsPersonFillGear className="text-xl" />
+            </Link>
+          </li>
+          <li>
+            <Link to="/admin">
+              <MdAdminPanelSettings className="text-xl" />
+            </Link>
           </li>
         </ul>
       </div>

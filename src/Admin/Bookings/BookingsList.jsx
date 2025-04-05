@@ -185,7 +185,7 @@ const BookingsList = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">All Bookings</h2>
         <div className="flex items-center gap-2">
-          <div className="relative w-[250px]">
+          <div className="relative w-[250px] hidden lg:block">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -196,7 +196,7 @@ const BookingsList = () => {
             />
           </div>
           <Tabs defaultValue="all" onValueChange={setStatusFilter}>
-            <TabsList>
+            <TabsList className="grid grid-cols-2 sm:grid-cols-6 overflow-auto h-15 sm:h-9">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="pending">Pending</TabsTrigger>
               <TabsTrigger value="confirmed">Confirmed</TabsTrigger>

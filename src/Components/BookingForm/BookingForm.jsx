@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import AddressCard from "../Address/AddressCard";
+import { useState } from "react";
+import Modal from "../Modal/Modal";
+import SelectAddress from "../Address/SelectAddress";
+import AddAddress from "../Address/AddAddress";
 
 const deviceTypes = [
   {
@@ -71,6 +75,7 @@ const deviceBrands = {
 
 const BookingForm = () => {
   const { toast } = useToast();
+  const [selectAddressOpen, setSelectedAddress] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -131,7 +136,7 @@ const BookingForm = () => {
             </p>
           </div>
 
-          <div className="service-card border border-gray-300 rounded-2xl shadow-2xl p-8">
+          <div className="service-card border border-gray-300 rounded-2xl shadow-2xl p-4 sm:p-8">
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
@@ -266,6 +271,14 @@ const BookingForm = () => {
                     pincode: "110045",
                   }}
                 />
+                <div>
+                  <button
+                    onClick={() => setSelectedAddress(true)}
+                    className="btn-primary-blue float-end text-xs"
+                  >
+                    Select Other
+                  </button>
+                </div>
               </div>
 
               {/* Time Slots */}
@@ -309,6 +322,12 @@ const BookingForm = () => {
             </form>
           </div>
         </div>
+        <Modal isOpen={false} head={`Select Address`}>
+          <AddAddress />
+        </Modal>
+        <Modal isOpen={selectAddressOpen} head={`Select or Add Address`}>
+          <SelectAddress />
+        </Modal>
       </div>
     </section>
   );

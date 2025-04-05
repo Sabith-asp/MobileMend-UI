@@ -2,25 +2,11 @@ import React from "react";
 import { IoLocationOutline } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa6";
 import AddressCard from "./AddressCard";
+import Modal from "../Modal/Modal";
+import AddAddress from "./AddAddress";
 
 const SelectAddress = () => {
-  const addresses = [
-    {
-      address: "123 Main St",
-      street: "Downtown",
-      pincode: "560001",
-    },
-    {
-      address: "456 Elm St",
-      street: "Suburb",
-      pincode: "110045",
-    },
-    {
-      address: "789 Oak St",
-      street: "City Center",
-      pincode: "400001",
-    },
-  ];
+  const addresses = [];
   return (
     <div>
       <p className="text-secondarygray">
@@ -40,9 +26,6 @@ const SelectAddress = () => {
         <FaPlus />
         <span className="ml-2">Add Address</span>
       </button>
-      <Modal isOpen={false} head={`Select Address`}>
-        <AddAddress />
-      </Modal>
     </div>
   );
 };

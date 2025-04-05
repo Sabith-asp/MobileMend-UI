@@ -1,14 +1,14 @@
 import { Input } from "@/Components/ui/input";
 import { Search } from "lucide-react";
 import React, { useState } from "react";
-import ServiceList from "./ServiceList";
+import CompletedList from "./CompletedList";
 
-const Services = () => {
+const Completed = () => {
   const [searchTerm, setSearchTerm] = useState("");
   return (
     <div>
       <div className="flex justify-between">
-        <h2 className="text-2xl font-bold">Services Management</h2>
+        <h2 className="text-2xl font-bold">Completed Orders</h2>
         <div className="flex items-center">
           <div className="relative w-[250px]  hidden lg:block">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -20,12 +20,12 @@ const Services = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn-primary-blue">Add Service</button>
+          <button className="btn-primary-blue">Add Device</button>
         </div>
       </div>
-      <ServiceList />
+      <CompletedList />
     </div>
   );
 };
 
-export default Services;
+export default Completed;

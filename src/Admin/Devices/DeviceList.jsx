@@ -14,9 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/Components/ui/button";
 import { Eye } from "lucide-react";
 import Modal from "@/Components/Modal/Modal";
-import ServiceForm from "./ServiceForm";
+import DeviceForm from "./DeviceForm";
 
-const ServiceList = () => {
+const DeviceList = () => {
   const [selectedServiceID, setselectedServiceID] = useState(null);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const closeEditModal = () => {
@@ -28,19 +28,19 @@ const ServiceList = () => {
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
-            <TableHead>Service Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Est. Time</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Popular</TableHead>
+            <TableHead>Brand</TableHead>
+            <TableHead>Model</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Year</TableHead>
+            <TableHead>Repairable Parts</TableHead>
+            <TableHead>Common Issues</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <TableRow>
             <TableCell className="font-medium">223456</TableCell>
-            <TableCell>sdgsgdfg</TableCell>
+            <TableCell>dfshh</TableCell>
             <TableCell>sdhdhfh</TableCell>
             <TableCell>23542</TableCell>
             <TableCell>1-2 hours</TableCell>
@@ -49,10 +49,8 @@ const ServiceList = () => {
                 Repair
               </span>
             </TableCell>
-            <TableCell>
-              <span className="p-1 px-2 border border-gray-400 rounded-full">
-                yes/no
-              </span>
+            <TableCell className="max-w-[90px] overflow-hidden whitespace-nowrap text-ellipsis">
+              ewrter,ert,erwt,erter,erwwfghfdgdhfhggfdhfhgfhgfghfgdhfghfgh
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end">
@@ -78,13 +76,13 @@ const ServiceList = () => {
       </Table>
       <Modal
         isOpen={editModalIsOpen}
-        head={selectedServiceID ? "Edit Product" : "Add Product"}
+        head={selectedServiceID ? "Edit Device" : "Add Device"}
         onClose={closeEditModal}
       >
-        <ServiceForm />
+        <DeviceForm />
       </Modal>
     </div>
   );
 };
 
-export default ServiceList;
+export default DeviceList;
