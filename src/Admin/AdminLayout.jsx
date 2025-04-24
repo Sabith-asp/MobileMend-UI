@@ -9,13 +9,6 @@ import Completed from "./Completed/Completed";
 import TechncianRequests from "./Technicians/TechnicianRequests";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-// import AdminDashboard from "@/components/admin/AdminDashboard";
-// import BookingsList from "@/components/admin/BookingsList";
-// import ServicesManager from "@/components/admin/ServicesManager";
-// import DevicesManager from "@/components/admin/DevicesManager";
-// import TechniciansManager from "@/components/admin/TechniciansManager";
-// import OrdersHistory from "@/components/admin/OrdersHistory";
-// import { Separator } from "@/components/ui/separator";
 
 const AdminLayout = () => {
   const { user } = useSelector((state) => state.user);
