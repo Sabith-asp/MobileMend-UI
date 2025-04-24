@@ -20,10 +20,9 @@ const Completed = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn-primary-blue">Add Device</button>
         </div>
       </div>
-      <CompletedList />
+      <CompletedList searchTerm={searchTerm} />
     </div>
   );
 };

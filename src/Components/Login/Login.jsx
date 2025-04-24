@@ -1,22 +1,67 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { checkAuth, loginUser } from "@/Api/authApi";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/Redux/Slices/authSlice";
+import { setUser } from "@/Redux/Slices/userSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   // Initialize Formik
   const formik = useFormik({
     initialValues: {
-      username: "",
+      userName: "",
       password: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string().required("Username is required"),
-      password: Yup.string().required("Password is required"),
+      userName: Yup.string()
+        .matches(
+          /^[a-zA-Z0-9]+$/,
+          "Username can only contain letters and numbers, no spaces"
+        )
+        .min(3, "Username must be at least 3 characters")
+        .required("Username is required"),
+      password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+        .matches(/\d/, "Password must contain at least one number")
+        .matches(
+          /[!@#$%^&*(),.?":{}|<>]/,
+          "Password must contain at least one special character"
+        )
+        .required("Password is required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log("Login Submitted", values);
-      alert("Login Successful!");
+      try {
+        const response = await loginUser(values);
+        console.log(response);
+
+        const userData = await checkAuth();
+        console.log(userData);
+        console.log("heloo");
+
+        dispatch(loginSuccess());
+        dispatch(setUser(userData));
+
+        if (userData.role == "Technician") {
+          navigate("/technician");
+          return;
+        }
+        if (userData.role == "Admin") {
+          navigate("/admin");
+          return;
+        }
+        console.log(response);
+        navigate("/");
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
     },
   });
 
@@ -35,16 +80,16 @@ const Login = () => {
           {/* Username Input */}
           <input
             type="text"
-            name="username"
-            className="w-full border-b border-gray-300 p-2 focus:outline-none"
+            name="userName"
+            className=" w-full border-b border-gray-300 p-2 text-xs  focus:outline-none"
             placeholder="Username"
-            value={formik.values.username}
+            value={formik.values.userName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
-          {formik.touched.username && formik.errors.username && (
-            <p className="text-red-500 float-start text-sm">
-              {formik.errors.username}
+          {formik.touched.userName && formik.errors.userName && (
+            <p className="text-red-500 text-xs float-start">
+              {formik.errors.userName}
             </p>
           )}
 
@@ -52,14 +97,14 @@ const Login = () => {
           <input
             type="password"
             name="password"
-            className="w-full border-b border-gray-300 p-2 focus:outline-none mt-2"
+            className=" w-full border-b border-gray-300 p-2 text-xs  focus:outline-none"
             placeholder="Password"
             value={formik.values.password}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
           {formik.touched.password && formik.errors.password && (
-            <p className="text-red-500 float-start text-sm">
+            <p className="text-red-500 text-xs float-start">
               {formik.errors.password}
             </p>
           )}
@@ -68,9 +113,12 @@ const Login = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-primaryblue text-white py-2 px-4 rounded-full text-base font-medium hover:bg-blue-500 transition"
+          disabled={formik.isSubmitting}
+          className={`bg-primaryblue text-white py-2 px-4 rounded-full text-base font-medium hover:bg-blue-500 transition ${
+            formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Log in
+          {formik.isSubmitting ? "Logging in..." : "Log in"}
         </button>
       </form>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Input } from "@/Components/ui/input";
@@ -9,30 +9,56 @@ import {
   MdOutlinePlace,
   MdOutlineLocationOn,
 } from "react-icons/md";
+import MapSelector from "../Maps/MapSelector";
+import { addAddress } from "@/Api/addressApi";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setAddAdressModal } from "@/Redux/Slices/uiSlice";
 
-const AddAddress = () => {
+const AddAddress = ({ refetch }) => {
+  const [positions, setPositions] = useState({
+    longitude: null,
+    latitude: null,
+  });
+  const dispatch = useDispatch();
+  console.log(positions);
+
   const initialValues = {
-    addressName: "",
+    addressDetail: "",
     street: "",
     city: "",
     state: "",
-    zipCode: "",
+    pincode: "",
   };
 
   const validationSchema = Yup.object({
-    addressName: Yup.string().required("Address Name is required"),
+    addressDetail: Yup.string().required("Address Name is required"),
     street: Yup.string().required("Street Address is required"),
     city: Yup.string().required("City is required"),
     state: Yup.string().required("State is required"),
-    zipCode: Yup.string()
-      .matches(/^\d{5}$/, "Zip Code must be 5 digits")
+    pincode: Yup.string()
+      .matches(/^\d{6}$/, "Pin Code must be 6 digits")
       .required("Zip Code is required"),
   });
 
-  const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    console.log("Form Submitted:", values);
-    setSubmitting(false);
-    resetForm();
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    const { latitude, longitude } = positions;
+    if (latitude == null || longitude == null) {
+      toast.error("Select location from map");
+      return;
+    }
+
+    console.log("Form Submitted:", { longitude, latitude, ...values });
+    try {
+      const response = await addAddress({ longitude, latitude, ...values });
+      setSubmitting(false);
+      resetForm();
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      dispatch(setAddAdressModal());
+      refetch();
+    }
   };
 
   return (
@@ -53,9 +79,9 @@ const AddAddress = () => {
               <MdOutlineHome className="mr-2" />
               Address Name
             </h6>
-            <Field as={Input} name="addressName" className="mt-1" />
+            <Field as={Input} name="addressDetail" className="mt-1" />
             <ErrorMessage
-              name="addressName"
+              name="addressDetail"
               component="div"
               className="text-red-500 text-xs"
             />
@@ -111,13 +137,16 @@ const AddAddress = () => {
               <MdOutlinePinDrop className="mr-2" />
               Zip Code
             </h6>
-            <Field as={Input} name="zipCode" className="mt-1" />
+            <Field as={Input} name="pincode" className="mt-1" />
             <ErrorMessage
-              name="zipCode"
+              name="pincode"
               component="div"
               className="text-red-500 text-xs"
             />
           </div>
+
+          <h6 className="text-sm">Select Location From Map</h6>
+          <MapSelector positions={positions} setPositions={setPositions} />
 
           {/* Buttons */}
           <div className="py-3 float-end">

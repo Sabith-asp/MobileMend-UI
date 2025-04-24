@@ -1,36 +1,99 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
+import { registerUser } from "@/Api/authApi";
+import toast from "react-hot-toast";
+
+const InputField = ({
+  name,
+  type = "text",
+  placeholder,
+  formik,
+  showToggle,
+  show,
+  setShow,
+}) => (
+  <div className="relative">
+    <input
+      type={showToggle && !show ? "password" : type}
+      name={name}
+      placeholder={placeholder}
+      className="w-full border-b border-gray-300 p-2 text-xs mt-2 focus:outline-none"
+      value={formik.values[name]}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+    />
+    {showToggle && (
+      <button
+        type="button"
+        onClick={() => setShow(!show)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-500"
+      >
+        {show ? "Hide" : "Show"}
+      </button>
+    )}
+    {formik.touched[name] && formik.errors[name] && (
+      <p className="text-red-500 text-xs float-start">{formik.errors[name]}</p>
+    )}
+  </div>
+);
+
+// ✅ Validation Schema
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .matches(/^[a-zA-Z\s]+$/, "Only letters and spaces")
+    .min(3, "Min 3 characters")
+    .required("Full Name is required"),
+  userName: Yup.string()
+    .matches(/^[a-zA-Z0-9]+$/, "Only letters and numbers")
+    .min(3, "Min 3 characters")
+    .required("Username is required"),
+  phone: Yup.string()
+    .matches(/^[6-9]\d{9}$/, "Invalid Indian phone number")
+    .required("Phone number is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string()
+    .min(6, "Min 6 characters")
+    .matches(/[A-Z]/, "At least one uppercase")
+    .matches(/[a-z]/, "At least one lowercase")
+    .matches(/\d/, "At least one number")
+    .matches(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
+});
 
 const SignUp = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const formik = useFormik({
     initialValues: {
-      fullName: "",
+      name: "",
+      userName: "",
+      phone: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
-    validationSchema: Yup.object({
-      fullName: Yup.string().required("Full Name is required"),
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
-        .required("Password is required"),
-      confirmPassword: Yup.string()
-        .oneOf([Yup.ref("password"), null], "Passwords must match")
-        .required("Confirm Password is required"),
-    }),
-    onSubmit: (values) => {
-      console.log("Form Submitted", values);
-      alert("Signup Successful!");
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        const res = await registerUser(values);
+        toast.success("Registered successfully!");
+        navigate("/login");
+      } catch (err) {
+        console.error("Registration failed", err);
+        toast.error(err.response?.data?.message);
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 
   return (
-    <div className="max-w-sm  mx-auto bg-gray-200 rounded-2xl text-black p-6 shadow-lg">
+    <div className="max-w-sm mx-auto bg-gray-200 rounded-2xl text-black p-6 shadow-lg">
       <form
         className="flex flex-col gap-4 text-center"
         onSubmit={formik.handleSubmit}
@@ -41,83 +104,52 @@ const SignUp = () => {
         </p>
 
         <div className="bg-white p-4 rounded-lg shadow-md">
-          {/* Full Name Input */}
-          <input
+          <InputField name="name" placeholder="Full Name" formik={formik} />
+          <InputField name="userName" placeholder="Username" formik={formik} />
+          <InputField
+            name="phone"
             type="text"
-            name="fullName"
-            className="w-full border-b border-gray-300 p-2 text-xs  focus:outline-none"
-            placeholder="Full Name"
-            value={formik.values.fullName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            placeholder="Phone Number"
+            formik={formik}
           />
-          {formik.touched.fullName && formik.errors.fullName && (
-            <p className="text-red-500 text-xs float-start">
-              {formik.errors.fullName}
-            </p>
-          )}
-
-          {/* Email Input */}
-          <input
-            type="email"
+          <InputField
             name="email"
-            className="w-full border-b border-gray-300 p-2 text-xs focus:outline-none mt-2"
+            type="email"
             placeholder="Email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            formik={formik}
           />
-          {formik.touched.email && formik.errors.email && (
-            <p className="text-red-500 text-xs float-start">
-              {formik.errors.email}
-            </p>
-          )}
-
-          {/* Password Input */}
-          <input
-            type="password"
+          <InputField
             name="password"
-            className="w-full border-b border-gray-300 p-2 text-xs focus:outline-none mt-2"
             placeholder="Password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            formik={formik}
+            showToggle
+            show={showPassword}
+            setShow={setShowPassword}
           />
-          {formik.touched.password && formik.errors.password && (
-            <p className="text-red-500 text-xs float-start">
-              {formik.errors.password}
-            </p>
-          )}
-
-          {/* Confirm Password Input */}
-          <input
-            type="password"
+          <InputField
             name="confirmPassword"
-            className="w-full border-b border-gray-300 p-2 text-xs focus:outline-none mt-2"
             placeholder="Confirm Password"
-            value={formik.values.confirmPassword}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            formik={formik}
+            showToggle
+            show={showConfirmPassword}
+            setShow={setShowConfirmPassword}
           />
-          {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-            <p className="text-red-500 text-xs float-start">
-              {formik.errors.confirmPassword}
-            </p>
-          )}
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
-          className="bg-primaryblue text-white py-2 px-4 rounded-full text-base font-medium hover:bg-blue-500 transition"
+          disabled={formik.isSubmitting}
+          className={`bg-primaryblue text-white py-2 px-4 rounded-full text-base font-medium hover:bg-blue-500 transition ${
+            formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Sign up
+          {formik.isSubmitting ? "Signing Up..." : "Sign up"}
         </button>
       </form>
 
       <div className="bg-blue-200 p-4 text-xs text-center mt-4 rounded-lg shadow-md">
         <p>
-          Have an account? <a href="#"></a>
+          Have an account?{" "}
           <Link to="/login" className="font-bold text-blue-600 hover:underline">
             Log in
           </Link>

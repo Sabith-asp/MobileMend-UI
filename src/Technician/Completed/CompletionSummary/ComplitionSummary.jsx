@@ -4,9 +4,13 @@ import ServiceDetails from "./ServiceDetails";
 import SparesDetails from "./SparesDetails";
 import CostSummary from "./CostSummary";
 import { Textarea } from "@/Components/ui/textarea";
+import { useDispatch } from "react-redux";
+import { setComplitionSummaryModalOpen } from "@/Redux/Slices/uiSlice";
 
-const ComplitionSummary = () => {
-  const [isCompleted, setIsCompleted] = useState(true);
+const ComplitionSummary = ({ complitionData, setSelectedViewDetail }) => {
+  console.log(complitionData);
+  const dispatch = useDispatch();
+
   return (
     <div>
       <div className="flex justify-between mt-2">
@@ -15,10 +19,10 @@ const ComplitionSummary = () => {
           Completed
         </span>
       </div>
-      <ServiceDetails />
-      <SparesDetails />
-      <CostSummary />
-      {isCompleted ? (
+      <ServiceDetails complitionData={complitionData} />
+      <SparesDetails complitionData={complitionData} />
+      <CostSummary complitionData={complitionData} />
+      {complitionData?.paymentStatus == "Unpaid" ? (
         <div className="py-3 float-end">
           <button onClick={""} className="btn-primary-gray">
             Cancel
@@ -31,7 +35,13 @@ const ComplitionSummary = () => {
             <Textarea placeholder="Add repair notes" />
           </div>
           <div className="py-3 float-end">
-            <button onClick={""} className="btn-primary-gray">
+            <button
+              onClick={() => {
+                setSelectedViewDetail(null);
+                dispatch(setComplitionSummaryModalOpen());
+              }}
+              className="btn-primary-gray"
+            >
               Cancel
             </button>
             <button className="btn-primary-blue text-sm sm:text-sm">

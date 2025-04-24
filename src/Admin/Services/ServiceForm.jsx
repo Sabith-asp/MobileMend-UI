@@ -3,16 +3,26 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Input } from "@/Components/ui/input";
 import { Textarea } from "@/Components/ui/textarea";
+import { useQuery } from "@tanstack/react-query";
+import { addService, getServices, updateService } from "@/Api/serviceApi";
+import { useDispatch } from "react-redux";
+import { setAddEditServiceModalOpen } from "@/Redux/Slices/uiSlice";
 
-const AddServiceForm = () => {
-  const initialValues = {
-    serviceName: "",
-    description: "",
-    price: "",
-    estimatedTime: "",
-    category: "",
-    isPopular: false,
-  };
+const AddServiceForm = ({
+  selectedServiceID,
+  setselectedServiceID,
+  adminServiceDataRefetch,
+}) => {
+  const { data: serviceByIdData, isLoading } = useQuery({
+    queryKey: ["serviceById", selectedServiceID],
+    queryFn: () => getServices({ serviceId: selectedServiceID }),
+    enabled: !!selectedServiceID, // don't run if ID is null
+    select: (data) => data?.data?.[0], // assuming your API returns an array
+  });
+
+  const dispatch = useDispatch();
+
+  console.log(serviceByIdData);
 
   const validationSchema = Yup.object({
     serviceName: Yup.string().required("Service Name is required"),
@@ -24,20 +34,51 @@ const AddServiceForm = () => {
     category: Yup.string().required("Category is required"),
   });
 
-  const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    console.log("Service Added:", values);
-    setSubmitting(false);
-    resetForm();
+  console.log(selectedServiceID);
+
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      if (selectedServiceID) {
+        const response = await updateService({
+          ...values,
+          serviceId: selectedServiceID,
+        });
+        return;
+      }
+      const response = await addService(values);
+
+      console.log(response);
+      adminServiceDataRefetch();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSubmitting(false);
+      dispatch(setAddEditServiceModalOpen());
+      setselectedServiceID(null);
+      resetForm();
+    }
   };
 
+  if (isLoading && selectedServiceID) return <p>Loading...</p>;
+
+  const initialValues = {
+    serviceName: serviceByIdData?.serviceName || "",
+    description: serviceByIdData?.description || "",
+    price: serviceByIdData?.price || "",
+    estimatedTime: serviceByIdData?.estimatedTime || "",
+    category: serviceByIdData?.category || "",
+    isPopular: serviceByIdData?.isPopular || false,
+  };
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
+      enableReinitialize
     >
       {({ isSubmitting }) => (
         <Form className="space-y-4">
+          {/* Form Fields (same as before) */}
           {/* Service Name */}
           <div>
             <h6 className="text-sm mt-1">Service Name</h6>
@@ -105,7 +146,14 @@ const AddServiceForm = () => {
 
           {/* Buttons */}
           <div className="py-3 float-end">
-            <button type="button" className="btn-primary-gray">
+            <button
+              type="button"
+              onClick={() => {
+                dispatch(setAddEditServiceModalOpen());
+                setselectedServiceID(null);
+              }}
+              className="btn-primary-gray"
+            >
               Cancel
             </button>
             <button

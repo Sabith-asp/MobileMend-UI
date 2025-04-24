@@ -8,6 +8,9 @@ import Services from "./Services/Services";
 import Devices from "./Devices/Devices";
 import Technicians from "./Technicians/Technicians";
 import Completed from "./Completed/Completed";
+import TechncianRequests from "./Technicians/TechnicianRequests";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 // import AdminDashboard from "@/components/admin/AdminDashboard";
 // import BookingsList from "@/components/admin/BookingsList";
 // import ServicesManager from "@/components/admin/ServicesManager";
@@ -17,6 +20,10 @@ import Completed from "./Completed/Completed";
 // import { Separator } from "@/components/ui/separator";
 
 const AdminLayout = () => {
+  const { user } = useSelector((state) => state.user);
+  if (user?.role !== "Admin") {
+    return <Navigate to={"/"} />;
+  }
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="mx-2 sm:mx-7">
@@ -29,12 +36,15 @@ const AdminLayout = () => {
         {/* <Separator /> */}
 
         <Tabs defaultValue="dashboard" className="mt-7 bg-white">
-          <TabsList className="w-full justify-start mb-4 overflow-auto grid grid-cols-2 sm:grid-cols-6 h-15 sm:h-9">
+          <TabsList className="w-full justify-start mb-4 overflow-auto grid grid-cols-2 sm:grid-cols-7 h-15 sm:h-9">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="devices">Devices</TabsTrigger>
             <TabsTrigger value="technicians">Technicians</TabsTrigger>
+            <TabsTrigger value="technicians-requests">
+              Technician Requests
+            </TabsTrigger>
             <TabsTrigger value="orders">Completed Orders</TabsTrigger>
           </TabsList>
 
@@ -56,6 +66,9 @@ const AdminLayout = () => {
 
           <TabsContent value="technicians" className="space-y-4">
             <Technicians />
+          </TabsContent>
+          <TabsContent value="technicians-requests" className="space-y-4">
+            <TechncianRequests />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-4">

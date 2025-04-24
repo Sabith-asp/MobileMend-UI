@@ -3,8 +3,13 @@ import { IoCallOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { BsPersonFillGear } from "react-icons/bs";
 import { MdAdminPanelSettings } from "react-icons/md";
+import { FiUser } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import ProfilePopover from "./ProfilePopover";
 
 const Navbar = () => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
   return (
     <nav className="navbar bg-base-100 shadow-sm px-2 sm:px-8">
       <div className="navbar-start">
@@ -102,9 +107,17 @@ const Navbar = () => {
           <IoCallOutline className="flex justify-center items-center mt-[2px] mr-1" />
           Book a Repair
         </button>
-        <button className="btn-primary-rounded text-xs ml-3 font-normal">
-          <Link to="/login">Login</Link>
-        </button>
+        <span className="">
+          {isAuthenticated ? (
+            <ProfilePopover />
+          ) : (
+            <Link to="/login">
+              <button className="btn-primary-rounded text-xs ml-3 font-normal">
+                Login
+              </button>
+            </Link>
+          )}
+        </span>
       </div>
     </nav>
   );

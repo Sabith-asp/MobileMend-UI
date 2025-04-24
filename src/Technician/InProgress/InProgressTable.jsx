@@ -18,40 +18,77 @@ import { BsBoxSeam } from "react-icons/bs";
 import UpdateStatus from "./UpdateStatus";
 import AddSpare from "./AddSpare";
 import ComplitionSummary from "../Completed/CompletionSummary/ComplitionSummary";
+import {
+  getBookingsByTechnicianIdAndStatus,
+  updateServiceStatus,
+} from "@/Api/technicianApi";
+import { useDispatch, useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { StatusBadge } from "@/Components/BookedService/BookedTable";
+import {
+  setAddSpareModalOpen,
+  setChangeServiceStatusModalOpen,
+  setComplitionSummaryModalOpen,
+} from "@/Redux/Slices/uiSlice";
+import { getBookingById } from "@/Api/bookingApi";
 
 const InProgressTable = () => {
-  const [reason, setReason] = useState("");
-  const [UpdateModalOpen, setUpdateModalOpen] = useState(false);
-  const [openSummaryModal, setOpenSummaryModal] = useState(false);
+  const { user } = useSelector((state) => state.user);
+  const {
+    changeServiceStatusModalOpen,
+    addSpareModalOpen,
+    complitionSummaryModalOpen,
+  } = useSelector((state) => state.ui);
+  console.log(complitionSummaryModalOpen);
+
+  const dispatch = useDispatch();
+  const {
+    data: inProgressOfTechnicianData,
+    refetch: inProgressOfTechnicianRefetch,
+  } = useQuery({
+    queryKey: ["inProgressOfTechnician"], // unique key
+    queryFn: () =>
+      getBookingsByTechnicianIdAndStatus(
+        user.technicianId ? user.technicianId : null,
+        "InProgress"
+      ),
+  });
+
+  console.log(inProgressOfTechnicianData);
+
+  const [selectedUpdatingService, setSelectedUpdatingService] = useState(null);
+  const [selectedAddSpare, setSelectedAddSpare] = useState(null);
+  console.log(selectedUpdatingService);
+  const [complitionData, setComplitionData] = useState(null);
   const [currentStatus, setCurrentStatus] = useState({
-    value: "pending",
     label: "Pending",
   });
+  console.log(selectedAddSpare);
+
   const statuses = [
-    { value: "inspecting", label: "Inspecting" },
-    { value: "diagnosing", label: "Diagnosing" },
-    { value: "ordered_parts", label: "Ordered Parts" },
-    { value: "repairing", label: "Repairing" },
-    { value: "testing", label: "Testing" },
-    { value: "completed", label: "Completed" },
+    { label: "Reached" },
+    { label: "Started" },
+    { label: "Completed" },
   ];
 
-  const updateStatus = () => {
-    if (currentStatus === "completed") {
-      closeUpdateModal();
-      setOpenSummaryModal(true);
+  const updateStatus = async (data) => {
+    try {
+      console.log(data);
+
+      const response = await updateServiceStatus(data);
+      dispatch(setChangeServiceStatusModalOpen());
+      inProgressOfTechnicianRefetch();
+      if (data.status == "Completed") {
+        const complitionSummary = await getBookingById(data.bookingId);
+        setComplitionData(complitionSummary.data);
+        dispatch(setComplitionSummaryModalOpen());
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const closeUpdateModal = () => {
-    setUpdateModalOpen(false);
-  };
-
-  const [isSpareModal, setisSpareModal] = useState(false);
-
-  const closeSpareModal = () => {
-    setisSpareModal(false);
-  };
   return (
     <div className="booked-table bg-white mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
       <Table>
@@ -63,116 +100,101 @@ const InProgressTable = () => {
             <TableHead>Issue</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Location</TableHead>
-            <TableHead>Repair Type</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>wefrgthy</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>iPhone 13</TableCell>
-            <TableCell className=" ">efrghjk</TableCell>
-            <TableCell>Screen Replacement</TableCell>
-            <TableCell>03/25/2025</TableCell>
-            <TableCell>
-              <span className="text-white text-xs font-medium  bg-primaryblue p-1 px-2 rounded-full">
-                On-Site
-              </span>
-            </TableCell>
-            <TableCell>
-              <span className="whitespace-nowrap text-white text-xs font-medium  bg-green-600 p-1 px-2 rounded-full">
-                Completed
-              </span>
-            </TableCell>
-            <TableCell className="flex">
-              <button className="btn-primary-gray p-1 items-center flex">
-                <MdAccessTime className="mr-2" />
-                Change Status
-              </button>
-              <button className="btn-primary-gray p-1 ml-2  items-center flex">
-                <BsBoxSeam className="mr-2" />
-                Add Spares
-              </button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>wefrgthy</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>iPhone 13</TableCell>
-            <TableCell className=" ">efrghjk</TableCell>
-            <TableCell>Screen Replacement</TableCell>
-            <TableCell>03/25/2025</TableCell>
-            <TableCell>
-              <span className="whitespace-nowrap text-primaryblue text-xs font-medium  bg-blue-200 p-1 px-2 rounded-full">
-                Off-site
-              </span>
-            </TableCell>
-            <TableCell>
-              <span className="whitespace-nowrap text-white text-xs font-medium  bg-green-600 p-1 px-2 rounded-full">
-                Completed
-              </span>
-            </TableCell>
-            <TableCell className="flex">
-              <button
-                onClick={() => setUpdateModalOpen(true)}
-                className="btn-primary-gray p-1 items-center flex"
-              >
-                <MdAccessTime className="mr-2" />
-                Change Status
-              </button>
-              <Modal
-                isOpen={UpdateModalOpen}
-                onClose={closeUpdateModal}
-                head={`Update Repair Status`}
-              >
-                <UpdateStatus
-                  statuses={statuses}
-                  closeUpdateModal={closeUpdateModal}
-                  setCurrentStatus={setCurrentStatus}
-                  updateStatus={updateStatus}
-                  currentStatus={currentStatus}
-                />
-              </Modal>
+          {inProgressOfTechnicianData
+            ? inProgressOfTechnicianData?.data.map((service) => (
+                <TableRow>
+                  <TableCell>{service?.bookingID}</TableCell>
+                  <TableCell>{service?.customerName}</TableCell>
+                  <TableCell>{service?.deviceName}</TableCell>
+                  <TableCell className=" ">{service?.serviceName}</TableCell>
+                  <TableCell>
+                    {new Date(service?.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>{service?.street}</TableCell>
 
-              <Modal
-                isOpen={openSummaryModal}
-                onClose={() => setOpenSummaryModal(false)}
-                head="Repair Completion Summary"
-              >
-                <ComplitionSummary />
-              </Modal>
+                  <TableCell>
+                    <StatusBadge status={service?.bookingStatus} />
+                  </TableCell>
+                  <TableCell className="">
+                    {service?.bookingStatus !== "Completed" &&
+                      service?.bookingStatus !== "Rejected" && (
+                        <div className="flex">
+                          <button
+                            onClick={() => {
+                              setSelectedUpdatingService(service.bookingID);
+                              dispatch(setChangeServiceStatusModalOpen());
+                            }}
+                            className="whitespace-nowrap btn-primary-gray p-1 items-center flex"
+                          >
+                            <MdAccessTime className="mr-2" />
+                            Change Status
+                          </button>
+                          <Modal
+                            isOpen={changeServiceStatusModalOpen}
+                            onClose={() => {
+                              setSelectedUpdatingService(null);
+                              dispatch(setChangeServiceStatusModalOpen());
+                            }}
+                            head={`Update Repair Status`}
+                          >
+                            <UpdateStatus
+                              setSelectedUpdatingService={
+                                setSelectedUpdatingService
+                              }
+                              selectedUpdatingService={selectedUpdatingService}
+                              updateStatus={updateStatus}
+                              statuses={statuses}
+                              setCurrentStatus={setCurrentStatus}
+                              currentStatus={currentStatus}
+                            />
+                          </Modal>
 
-              <button
-                onClick={() => setisSpareModal(true)}
-                className="btn-primary-gray p-1 ml-2  items-center flex"
-              >
-                <BsBoxSeam className="mr-2" />
-                Add Spares
-              </button>
-              <Modal
-                isOpen={isSpareModal}
-                onClose={closeSpareModal}
-                head={`Add Spare Parts`}
-              >
-                <AddSpare closeSpareModal={closeSpareModal} />
-              </Modal>
-            </TableCell>
-            <TableCell>
-              <div className="flex">
-                <button className="p-1 border border-gray-400 rounded-md mx-1">
-                  <MdAccessTime />
-                </button>
-                <button className="p-1 border border-gray-400 rounded-md">
-                  <MdOutlineVideocam />
-                </button>
-              </div>
-            </TableCell>
-          </TableRow>
+                          <button
+                            onClick={() => {
+                              setSelectedAddSpare(service?.bookingID);
+                              dispatch(setAddSpareModalOpen());
+                            }}
+                            className="whitespace-nowrap btn-primary-gray p-1 ml-2  items-center flex"
+                          >
+                            <BsBoxSeam className="mr-2" />
+                            Add Spares
+                          </button>
+                          <Modal
+                            isOpen={addSpareModalOpen}
+                            onClose={() => {
+                              setSelectedAddSpare(null);
+                              dispatch(setAddSpareModalOpen());
+                            }}
+                            head={`Add Spare Parts`}
+                          >
+                            <AddSpare
+                              bookingId={selectedAddSpare}
+                              setSelectedAddSpare={setSelectedAddSpare}
+                            />
+                          </Modal>
+                        </div>
+                      )}
+                  </TableCell>
+                </TableRow>
+              ))
+            : "No in progress jobs"}
         </TableBody>
       </Table>
+      <Modal
+        isOpen={complitionSummaryModalOpen}
+        onClose={() => {
+          dispatch(setComplitionSummaryModalOpen());
+        }}
+        head="Repair Completion Summary"
+      >
+        <ComplitionSummary complitionData={complitionData} />
+      </Modal>
     </div>
   );
 };

@@ -15,14 +15,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { month: "January", revenue: 12000, expense: 8000 },
-  { month: "February", revenue: 15000, expense: 9500 },
-  { month: "March", revenue: 18000, expense: 12000 },
-  { month: "April", revenue: 14000, expense: 11000 },
-  { month: "May", revenue: 20000, expense: 15000 },
-  { month: "June", revenue: 22000, expense: 16000 },
-];
 
 const chartConfig = {
   revenue: {
@@ -35,10 +27,10 @@ const chartConfig = {
   },
 };
 
-const RevenueChart = () => {
+const RevenueChart = ({ revenueData }) => {
   return (
     <ChartContainer config={chartConfig} className="h-[350px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
+      <BarChart accessibilityLayer data={revenueData}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="month"

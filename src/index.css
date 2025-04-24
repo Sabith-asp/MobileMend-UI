@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,500;1,14..32,500&display=swap");
+/* App.css */
+@import "leaflet/dist/leaflet.css";
 
 @tailwind base;
 @tailwind components;
@@ -25,6 +27,9 @@ body {
   }
   .btn-primary-gray {
     @apply bg-gray-200 hover:bg-gray-300 border border-gray-500 text-black font-light py-2 px-4 rounded-xl;
+  }
+  .btn-primary-red {
+    @apply bg-red-600 hover:bg-white border border-gray-500 text-white hover:text-red-600 font-light py-2 px-4 rounded-xl;
   }
 }
 

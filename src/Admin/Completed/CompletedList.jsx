@@ -16,25 +16,31 @@ import { Textarea } from "@/Components/ui/textarea";
 
 import CompletedDetail from "./CompletedDetail/CompletedDetail";
 import ProcessRefund from "./ProcessRefund";
+import { useQuery } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
+import { getBookings } from "@/Api/bookingApi";
+import {
+  setAdminBookingDetailModalOpen,
+  setAdminCompeletedOrder,
+} from "@/Redux/Slices/uiSlice";
 
-const CompletedList = () => {
+const CompletedList = ({ searchTerm }) => {
+  const dispatch = useDispatch();
+  const { data: completedBookingsData, refetch: completedBookingsDataRefetch } =
+    useQuery({
+      queryKey: ["completedBookings", searchTerm],
+      queryFn: () =>
+        getBookings({ searchString: searchTerm, status: "Completed" }),
+    });
+
+  console.log(completedBookingsData);
+
+  const [selectedBooking, setSelectedBooking] = useState(null);
+
+  const { adminCompeletedOrder } = useSelector((state) => state.ui);
+
   const [reason, setReason] = useState("");
-  const [viewDetailModal, setviewDetailModal] = useState(false);
 
-  const closeViewModal = () => {
-    setviewDetailModal(false);
-  };
-
-  const [rejectModalOpen, setrejectModalOpen] = useState(false);
-
-  const closeRejectModal = () => {
-    setrejectModalOpen(false);
-  };
-
-  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
-  const closeRefundModal = () => {
-    setIsRefundModalOpen(false);
-  };
   return (
     <div className="booked-table bg-white mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
       <Table>
@@ -51,45 +57,60 @@ const CompletedList = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>iPhone 13</TableCell>
-            <TableCell>Screen Replacement</TableCell>
-            <TableCell>03/25/2025</TableCell>
-            <TableCell>wefrgthy</TableCell>
-            <TableCell className=" ">efrghjk</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>1 Item</TableCell>
+          {completedBookingsData?.data?.length > 0 ? (
+            completedBookingsData?.data?.map((booking) => (
+              <TableRow>
+                <TableCell>{booking?.bookingID}</TableCell>
+                <TableCell>{booking?.customerName}</TableCell>
+                <TableCell>{booking?.deviceName}</TableCell>
+                <TableCell>{booking?.issue}</TableCell>
+                <TableCell className=" ">
+                  {new Date(booking?.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{booking?.street}</TableCell>
+                <TableCell>{booking?.spares?.length}</TableCell>
 
-            <TableCell className="flex">
-              {/* Rate modal */}
-              <div className="">
-                <button
-                  onClick={() => setviewDetailModal(true)}
-                  className="text-xs flex items-center btn-primary-blue"
-                >
-                  <IoDocumentTextOutline />
-                  View Details
-                </button>
-                <Modal
-                  isOpen={viewDetailModal}
-                  onClose={closeViewModal}
-                  head={`Service Request Details`}
-                >
-                  <CompletedDetail
-                    setIsRefundModalOpen={setIsRefundModalOpen}
-                    setviewDetailModal={setviewDetailModal}
-                  />
-                </Modal>
-                <Modal
-                  isOpen={isRefundModalOpen}
-                  onClose={closeRefundModal}
-                  head={`Process Refund`}
-                >
-                  <ProcessRefund closeRefundModal={closeRefundModal} />
-                </Modal>
-              </div>
-            </TableCell>
-          </TableRow>
+                <TableCell className="flex">
+                  {/* Rate modal */}
+                  <div className="">
+                    <button
+                      onClick={() => {
+                        setSelectedBooking(booking);
+                        dispatch(setAdminCompeletedOrder());
+                      }}
+                      className="text-xs flex items-center btn-primary-blue"
+                    >
+                      <IoDocumentTextOutline />
+                      View Details
+                    </button>
+                    <Modal
+                      isOpen={adminCompeletedOrder}
+                      onClose={() => {
+                        setSelectedBooking(null);
+                        dispatch(setAdminCompeletedOrder());
+                      }}
+                      head={`Service Request Details`}
+                    >
+                      <CompletedDetail selectedBooking={selectedBooking} />
+                    </Modal>
+                    {/* <Modal
+                      isOpen={isRefundModalOpen}
+                      onClose={closeRefundModal}
+                      head={`Process Refund`}
+                    >
+                      <ProcessRefund closeRefundModal={closeRefundModal} />
+                    </Modal> */}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center h-24">
+                No bookings found. Try adjusting your search or filters.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>

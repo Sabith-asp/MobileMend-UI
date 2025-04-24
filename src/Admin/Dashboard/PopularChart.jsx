@@ -14,17 +14,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const repairData = [
-  { type: "Screen Repair", count: 300 },
-  { type: "Battery Replacement", count: 280 },
-  { type: "Charging Port Repair", count: 150 },
-  { type: "Speaker Repair", count: 100 },
-  { type: "Camera Repair", count: 120 },
-  { type: "Water Damage Repair", count: 90 },
-  { type: "Software Issues", count: 200 },
-  { type: "Button Repair", count: 110 },
-];
-
 const chartConfig = {
   desktop: {
     label: "Desktop",
@@ -41,12 +30,12 @@ const chartConfig = {
 
 import React from "react";
 
-const PopularChart = () => {
+const PopularChart = ({ popularData }) => {
   return (
     <ChartContainer config={chartConfig} className="h-[350px] w-full">
       <BarChart
         accessibilityLayer
-        data={repairData}
+        data={popularData}
         layout="vertical"
         margin={{
           right: 16,

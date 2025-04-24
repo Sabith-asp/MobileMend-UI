@@ -26,97 +26,141 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import AddressCard from "../Address/AddressCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../Modal/Modal";
 import SelectAddress from "../Address/SelectAddress";
 import AddAddress from "../Address/AddAddress";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setAddAdressModal,
+  setAddressModal,
+  setBookingEstimateModal,
+  setPaymentSuccessModalOpen,
+  setSelectTechnicianModalOpen,
+} from "@/Redux/Slices/uiSlice";
+import { useQuery } from "@tanstack/react-query";
+import { getAddress } from "@/Api/addressApi";
+import { getDevices } from "@/Api/deviceApi";
+import { getServices } from "@/Api/serviceApi";
+import BookingEstimate from "./BookingEstimate";
+import SelectTechnician from "./SelectTechnician";
+import PaymentSuccess from "./PaymentSuccess";
+import { bookService } from "@/Api/bookingApi";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const deviceTypes = [
+const device = [
   {
-    value: "smartphone",
-    label: "Smartphone",
-    icon: <FiSmartphone className="mr-2 h-5 w-5" />,
+    deviceID: "40119687-0fad-11f0-898f-372f46d4552c",
+    deviceName: "iPhone 13",
+    brand: "Apple",
+    deviceType: "Smartphone",
+    model: "A2633",
+    releaseYear: 2021,
+    commonIssues: "Battery draining fast, Screen flickering",
+    repairableComponents: "Battery, Display, Charging Port",
   },
   {
-    value: "tablet",
-    label: "Tablet",
-    icon: <FaTabletAlt className="mr-2 h-5 w-5" />,
-  },
-  {
-    value: "laptop",
-    label: "Laptop",
-    icon: <MdLaptopMac className="mr-2 h-5 w-5" />,
-  },
-  {
-    value: "desktop",
-    label: "Desktop",
-    icon: <MdMonitor className="mr-2 h-5 w-5" />,
+    deviceID: "6f518649-12d9-11f0-898f-372f46d4552c",
+    deviceName: "iPhone 15",
+    brand: "Apple",
+    deviceType: "Smartphone",
+    model: "A2633",
+    releaseYear: 2021,
+    commonIssues: "Battery draining fast, Screen flickering",
+    repairableComponents: "Battery, Display, Charging Port",
   },
 ];
-
-const timeSlots = [
-  "9:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
-];
-
-const deviceBrands = {
-  smartphone: ["Apple", "Samsung", "Google", "OnePlus", "Xiaomi"],
-  tablet: ["Apple", "Samsung", "Microsoft", "Lenovo"],
-  laptop: ["Apple", "Dell", "HP", "Asus", "Lenovo"],
-  desktop: ["Dell", "HP", "Asus", "Acer", "Custom Build"],
-};
 
 const BookingForm = () => {
-  const { toast } = useToast();
-  const [selectAddressOpen, setSelectedAddress] = useState(false);
+  const dispatch = useDispatch();
+  const {
+    selectAdressModalOpen,
+    addAddressModalOpen,
+    bookingEstimateModalOpen,
+    selectTechnicianModalOpen,
+    paymentSuccessModalOpen,
+  } = useSelector((state) => state.ui);
+  const { user } = useSelector((state) => state.user);
+  const [selectedTechnicianID, setSelectedTechnicianID] = useState(null);
+  console.log(selectedTechnicianID);
+  const [selectedServiceId, setSelectedServiceId] = useState();
+  console.log(selectedServiceId);
 
+  const {
+    data: addressData,
+    isLoading,
+    isError,
+    error,
+    refetch: addressRefetch,
+  } = useQuery({
+    queryKey: ["addresses"], // unique key
+    queryFn: getAddress,
+  });
+
+  const { data: deviceData } = useQuery({
+    queryKey: ["devices"], // unique key
+    queryFn: getDevices,
+  });
+
+  const { data: serviceData } = useQuery({
+    queryKey: ["serivces"], // unique key
+    queryFn: getServices,
+  });
+
+  console.log(serviceData);
+
+  console.log("selected technician id from booking form", selectedTechnicianID);
+
+  useEffect(() => {
+    if (addressData?.data?.length > 0) {
+      setSelectedAddress(addressData.data[0]);
+    }
+  }, [addressData]);
+
+  const [selectedAddress, setSelectedAddress] = useState(
+    addressData?.data[0] || null
+  );
+  const [selectedDeviceID, setSelectedDeviceID] = useState(null);
+  console.log(selectedDeviceID);
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      name: "",
+      customerName: "",
       email: "",
       phone: "",
-      deviceType: "smartphone",
-      deviceBrand: "",
-      deviceModel: "",
       issue: "",
-      date: null,
-      timeSlot: "",
-      selectedAddress: "",
+      addressID: selectedAddress?.addressID,
+      deviceID: "",
+      serviceID: "",
+      technicianID: selectedTechnicianID,
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Full Name is required"),
+      customerName: Yup.string().required("Full Name is required"),
       email: Yup.string().email("Invalid email").required("Email is required"),
       phone: Yup.string().required("Phone number is required"),
-      deviceBrand: Yup.string().required("Select a device brand"),
-      deviceModel: Yup.string().required("Enter device model"),
+      deviceID: Yup.string().required("Select device"),
+      serviceID: Yup.string().required("Select service"),
       issue: Yup.string().required("Please describe your issue"),
-      date: Yup.date().nullable().required("Select a date"),
-      timeSlot: Yup.string().required("Select a time slot"),
-      selectedAddress: Yup.string().required("Select a service address"),
     }),
-    onSubmit: (values, { setSubmitting, resetForm }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       console.log(values);
 
-      if (!values.selectedAddress) {
-        toast({
-          title: "Address Required",
-          description: "Please select a service address.",
-          variant: "destructive",
-        });
+      if (!values.addressID) {
+        toast.error("Select address");
         return;
       }
 
-      toast({
-        title: "Booking Submitted",
-        description: "We'll contact you shortly to confirm.",
-      });
+      try {
+        const response = await bookService(values);
+        console.log(response);
+        toast.success(response?.message);
+      } catch (error) {
+        console.log(error);
+
+        toast.error("Error in booking service");
+      }
+      toast;
 
       setSubmitting(false);
       resetForm();
@@ -143,12 +187,14 @@ const BookingForm = () => {
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input
-                    id="name"
+                    id="customerName"
                     placeholder="Enter your full name"
-                    {...formik.getFieldProps("name")}
+                    {...formik.getFieldProps("customerName")}
                   />
-                  {formik.touched.name && formik.errors.name ? (
-                    <p className="text-red-500">{formik.errors.name}</p>
+                  {formik.touched.customerName && formik.errors.customerName ? (
+                    <p className="text-red-500 text-sm">
+                      {formik.errors.customerName}
+                    </p>
                   ) : null}
                 </div>
 
@@ -162,7 +208,9 @@ const BookingForm = () => {
                     {...formik.getFieldProps("email")}
                   />
                   {formik.touched.email && formik.errors.email ? (
-                    <p className="text-red-500">{formik.errors.email}</p>
+                    <p className="text-red-500 text-sm">
+                      {formik.errors.email}
+                    </p>
                   ) : null}
                 </div>
 
@@ -175,128 +223,93 @@ const BookingForm = () => {
                     {...formik.getFieldProps("phone")}
                   />
                   {formik.touched.phone && formik.errors.phone ? (
-                    <p className="text-red-500">{formik.errors.phone}</p>
+                    <p className="text-red-500 text-sm">
+                      {formik.errors.phone}
+                    </p>
                   ) : null}
-                </div>
-
-                {/* Device Type */}
-                <div className="space-y-2">
-                  <Label>Device Type</Label>
-                  <RadioGroup
-                    value={formik.values.deviceType}
-                    onValueChange={(val) =>
-                      formik.setFieldValue("deviceType", val)
-                    }
-                  >
-                    {deviceTypes.map((device) => (
-                      <div
-                        key={device.value}
-                        className="flex items-center space-x-2"
-                      >
-                        <RadioGroupItem value={device.value} />
-                        <Label className="flex items-center">
-                          {device.icon} {device.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {/* Device Brand */}
-                <div className="space-y-2">
-                  <Label>Device Brand</Label>
-                  <Select
-                    value={formik.values.deviceBrand}
-                    onValueChange={(val) =>
-                      formik.setFieldValue("deviceBrand", val)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Brand" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {deviceBrands[formik.values.deviceType]?.map((brand) => (
-                        <SelectItem key={brand} value={brand}>
-                          {brand}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 {/* Device Model */}
                 <div className="space-y-2 ">
-                  <Label>Device Model</Label>
-                  <Input
-                    id="deviceModel"
-                    placeholder="Enter model name"
-                    {...formik.getFieldProps("deviceModel")}
-                  />
+                  <Label>Select Device</Label>
+                  <Select
+                    value={formik.values.deviceID}
+                    onValueChange={(val) => {
+                      formik.setFieldValue("deviceID", val);
+                      setSelectedDeviceID(val);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Device" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {deviceData?.data?.map((device) => (
+                        <SelectItem
+                          key={device.deviceID}
+                          value={device.deviceID}
+                        >
+                          {device.deviceName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.deviceID && formik.errors.deviceID ? (
+                    <p className="text-red-500 text-sm">
+                      {formik.errors.deviceID}
+                    </p>
+                  ) : null}
                 </div>
 
-                {/* Date Picker */}
-                <div className="space-y-2 flex flex-col">
-                  <Label>Preferred Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline">
-                        <FaRegCalendarAlt className="mr-2 h-4 w-4" />
-                        {formik.values.date
-                          ? format(formik.values.date, "PPP")
-                          : "Select a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formik.values.date}
-                        onSelect={(date) => formik.setFieldValue("date", date)}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  {formik.touched.date && formik.errors.date ? (
-                    <p className="text-red-500">{formik.errors.date}</p>
+                <div className="space-y-2 ">
+                  <Label>Select Service</Label>
+                  <Select
+                    value={formik.values.serviceID}
+                    onValueChange={(val) => {
+                      formik.setFieldValue("serviceID", val);
+                      setSelectedServiceId(val);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {serviceData?.data?.map((service) => (
+                        <SelectItem
+                          key={service.serviceID}
+                          value={service.serviceID}
+                        >
+                          {service.serviceName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formik.touched.serviceID && formik.errors.serviceID ? (
+                    <p className="text-red-500 text-sm">
+                      {formik.errors.serviceID}
+                    </p>
                   ) : null}
                 </div>
               </div>
 
               <div className="space-y-2 flex flex-col">
                 <Label>Select Address</Label>
-                <AddressCard
-                  address={{
-                    address: "456 Elm St",
-                    street: "Suburb",
-                    pincode: "110045",
-                  }}
-                />
+                {selectedAddress ? (
+                  <AddressCard
+                    address={selectedAddress}
+                    setSelectedAddress={setSelectedAddress}
+                    selectedAddress={selectedAddress}
+                  />
+                ) : (
+                  <h6>No address available</h6>
+                )}
                 <div>
                   <button
-                    onClick={() => setSelectedAddress(true)}
+                    disabled={user?.role !== "User"}
+                    onClick={() => dispatch(setAddressModal())}
                     className="btn-primary-blue float-end text-xs"
                   >
                     Select Other
                   </button>
-                </div>
-              </div>
-
-              {/* Time Slots */}
-              <div className="space-y-2 flex flex-col">
-                <Label>Preferred Time</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {timeSlots.map((slot) => (
-                    <Button
-                      key={slot}
-                      type="button"
-                      variant={
-                        formik.values.timeSlot === slot ? "default" : "outline"
-                      }
-                      onClick={() => formik.setFieldValue("timeSlot", slot)}
-                    >
-                      {slot}
-                    </Button>
-                  ))}
                 </div>
               </div>
 
@@ -308,25 +321,84 @@ const BookingForm = () => {
                   placeholder="Describe the issue"
                   {...formik.getFieldProps("issue")}
                 />
+                {formik.touched.issue && formik.errors.issue ? (
+                  <p className="text-red-500 text-sm">{formik.errors.issue}</p>
+                ) : null}
               </div>
 
               {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full btn-glow bg-primaryblue text-white"
-                size="lg"
-                disabled={formik.isSubmitting}
+              <button
+                type="button"
+                disabled={!(formik.isValid && formik.dirty)}
+                className={`w-full btn-glow p-2 rounded-lg text-white transition ${
+                  formik.isValid && formik.dirty
+                    ? "bg-primaryblue hover:bg-blue-500"
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
+                onClick={() => {
+                  if (
+                    selectedAddress?.addressID == null ||
+                    selectedAddress?.addressID == undefined
+                  ) {
+                    toast.error("Select Addrress");
+                    return;
+                  }
+                  dispatch(setSelectTechnicianModalOpen());
+                }}
               >
-                {formik.isSubmitting ? "Submitting..." : "Book Your Repair"}
-              </Button>
+                Proceed
+              </button>
             </form>
           </div>
         </div>
-        <Modal isOpen={false} head={`Select Address`}>
-          <AddAddress />
+        <Modal
+          onClose={() => dispatch(setAddressModal())}
+          isOpen={selectAdressModalOpen}
+          head={`Select or Add Address`}
+        >
+          <SelectAddress
+            setSelectedAddress={setSelectedAddress}
+            selectedAddress={selectedAddress}
+            addresses={addressData?.data}
+          />
         </Modal>
-        <Modal isOpen={selectAddressOpen} head={`Select or Add Address`}>
-          <SelectAddress />
+        <Modal
+          onClose={() => dispatch(setAddAdressModal())}
+          isOpen={addAddressModalOpen}
+          head={`Select Address`}
+        >
+          <AddAddress refetch={addressRefetch} />
+        </Modal>
+
+        <Modal
+          isOpen={selectTechnicianModalOpen}
+          head={"Select Technician(Auto/Manual)"}
+          onClose={() => dispatch(setSelectTechnicianModalOpen())}
+        >
+          <SelectTechnician
+            selectedAddressID={selectedAddress?.addressID}
+            selectedDeviceID={selectedDeviceID}
+            selectedTechnicianID={selectedTechnicianID}
+            setSelectedTechnicianID={setSelectedTechnicianID}
+          />
+        </Modal>
+        <Modal
+          isOpen={bookingEstimateModalOpen}
+          head={"Booking Estimate"}
+          onClose={() => dispatch(setBookingEstimateModal())}
+        >
+          <BookingEstimate
+            selectedServiceId={selectedServiceId}
+            formik={formik}
+            selectedTechnicianID={selectedTechnicianID}
+            selectAddressId={selectedAddress?.addressID}
+          />
+        </Modal>
+        <Modal
+          isOpen={paymentSuccessModalOpen}
+          onClose={() => dispatch(setPaymentSuccessModalOpen())}
+        >
+          <PaymentSuccess />
         </Modal>
       </div>
     </section>

@@ -2,9 +2,12 @@ import { Input } from "@/Components/ui/input";
 import { Search } from "lucide-react";
 import React, { useState } from "react";
 import DeviceList from "./DeviceList";
+import { useDispatch } from "react-redux";
+import { setDeviceManagementModalOpen } from "@/Redux/Slices/uiSlice";
 
 const Devices = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const dispatch = useDispatch();
   return (
     <div>
       <div className="flex justify-between">
@@ -20,10 +23,17 @@ const Devices = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn-primary-blue">Add Device</button>
+          <button
+            onClick={() => {
+              dispatch(setDeviceManagementModalOpen());
+            }}
+            className="btn-primary-blue"
+          >
+            Add Device
+          </button>
         </div>
       </div>
-      <DeviceList />
+      <DeviceList searchTerm={searchTerm} />
     </div>
   );
 };

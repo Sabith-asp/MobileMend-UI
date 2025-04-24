@@ -4,7 +4,7 @@ import Login from "../../Components/Login/Login";
 const Auth = ({ item }) => {
   return (
     <div className="container mx-auto">
-      <div className=" h-[90vh] grid grid-cols-1 md:grid-cols-2">
+      <div className=" h-[150vh] sm:h-[90vh]  grid grid-cols-1 md:grid-cols-2">
         <div className="h-[100%] flex flex-col items-center justify-center">
           <div className="w-[70%]">
             <img
