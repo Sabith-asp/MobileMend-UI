@@ -44,7 +44,7 @@ const TechnicianHeader = () => {
   useEffect(() => {
     let intervalId;
 
-    if (status === "Online") {
+    if (user?.status === "Online") {
       const getLocationAndUpdate = () => {
         if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
