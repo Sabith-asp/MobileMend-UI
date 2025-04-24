@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import AdminOverview from "./Dashboard/AdminOverview";
 import AdminDashboard from "./Dashboard/AdminDashboard";
