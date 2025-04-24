@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/Components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { ArrowUpRight, ArrowDownLeft, Activity } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/Components/ui/badge";
 import { MdOutlineSettings } from "react-icons/md";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/Components/ui/dropdown-menu";
 import Modal from "@/Components/Modal/Modal";
 import TechnicianProfile from "./TechnicianProfile";
 import { useDispatch, useSelector } from "react-redux";

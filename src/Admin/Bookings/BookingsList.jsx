@@ -6,9 +6,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from "@/Components/ui/table";
+import { Button } from "@/Components/ui/button";
+import { Badge } from "@/Components/ui/badge";
 
 import {
   Calendar,
@@ -23,10 +23,10 @@ import {
   Calendar as CalendarIcon,
   Package,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import Modal from "@/Components/Modal/Modal";
 import BookingDetail from "./BookingSummary/BookingDetail";
 import { StatusBadge } from "@/Components/BookedService/BookedTable";

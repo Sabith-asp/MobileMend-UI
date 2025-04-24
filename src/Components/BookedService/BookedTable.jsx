@@ -7,14 +7,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import { MdOutlineVideocam, MdOutlineChatBubbleOutline } from "react-icons/md";
 import Modal from "../Modal/Modal";
 import RateTechnician from "../RateTechnician/RateTechnician";
 import UserBookingDetail from "../UserBookingDetail/UserBookingDetail";
 import { getBookings } from "@/Api/bookingApi";
 import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/Components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setRatingModalOpen,

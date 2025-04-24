@@ -15,8 +15,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from "@/Components/ui/table";
+import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 import Modal from "@/Components/Modal/Modal";
 import TechnicianForm from "./TechnicianForm";

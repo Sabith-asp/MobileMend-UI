@@ -1,9 +1,9 @@
 import React from "react";
-// import { ChartConfig } from "@/components/ui/chart";
+// import { ChartConfig } from "@/Components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { ChartContainer } from "@/components/ui/chart";
-import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import { ChartContainer } from "@/Components/ui/chart";
+import { ChartTooltip, ChartTooltipContent } from "@/Components/ui/chart";
+import { ChartLegend, ChartLegendContent } from "@/Components/ui/chart";
 
 // Updated chartData with revenue and completed bookings
 // const chartData = [
