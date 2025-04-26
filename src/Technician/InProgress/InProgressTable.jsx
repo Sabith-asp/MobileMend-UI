@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import Modal from "../../Components/Modal/Modal";
 import { FaCheck } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";

@@ -68,12 +68,17 @@ export const findTechnicianAutomatically = async (addressId, deviceId) => {
 
 export const getBookings = async (data = {}) => {
   try {
+    console.log(data);
+
     const paramsData = { ...data };
     const response = await api.get("/Booking/get-booking", {
       params: paramsData,
     });
+
     return response.data;
   } catch (error) {
+    console.log(error);
+
     throw error;
   }
 };

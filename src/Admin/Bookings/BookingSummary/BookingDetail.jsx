@@ -4,6 +4,8 @@ import ServiceDetailsAdmin from "./ServiceDetailsAdmin";
 import { StatusBadge } from "@/Components/BookedService/BookedTable";
 
 const BookingDetail = ({ selectedBooking }) => {
+  console.log(selectedBooking);
+
   return (
     <div>
       <div className="flex justify-between mt-2">

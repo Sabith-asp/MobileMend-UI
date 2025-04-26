@@ -1,18 +1,18 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Textarea } from "@/Components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Calendar } from "@/components/ui/calendar";
+} from "@/Components/ui/select";
+import { Label } from "@/Components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
+import { Calendar } from "@/Components/ui/calendar";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { FiSmartphone } from "react-icons/fi";
 import { MdLaptopMac, MdMonitor } from "react-icons/md";
@@ -23,7 +23,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/Components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import AddressCard from "../Address/AddressCard";
 import { useEffect, useState } from "react";

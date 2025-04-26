@@ -77,14 +77,20 @@ export const getTechnicians = async (data) => {
     });
     return response.data;
   } catch (error) {
+    console.log(error);
+
     throw error;
   }
 };
 export const updateTechnicianRequest = async (data) => {
   try {
+    console.log(data);
     var response = await api.patch(`/Technician/update-request-status`, data);
+
     return response.data;
   } catch (error) {
+    console.log(error);
+
     throw error;
   }
 };

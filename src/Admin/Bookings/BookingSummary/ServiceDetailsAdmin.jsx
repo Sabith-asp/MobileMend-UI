@@ -29,7 +29,13 @@ const ServiceDetailsAdmin = ({ selectedBooking }) => {
       </div>
       <div>
         <h6 className="text-sm text-secondarygray mt-1">Price</h6>
-        <h6 className="text-sm mt-1">₹3000</h6>
+        <h6 className="text-sm mt-1">
+          ₹
+          {(
+            selectedBooking?.bookingCostDetails?.totalBookingCost +
+            selectedBooking?.sparesTotal
+          ).toFixed(2)}
+        </h6>
       </div>
       <div>
         <h6 className="text-sm text-secondarygray mt-1">Notes</h6>
