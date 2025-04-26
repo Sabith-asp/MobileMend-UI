@@ -10,13 +10,13 @@ const AdminOverview = ({ AdminDashboardData }) => {
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">
             <h5 className="font-bold">Total Revenue</h5>
             <h3 className="text-3xl font-extrabold">
-              {AdminDashboardData?.totalRevenue}
+              {AdminDashboardData?.totalRevenue.toFixed(2)}
             </h3>
           </div>
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">
             <h5 className="font-bold">Total Profit</h5>
             <h3 className="text-3xl font-extrabold">
-              {AdminDashboardData?.totalProfit}
+              {AdminDashboardData?.totalProfit.toFixed(2)}
             </h3>
           </div>
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">

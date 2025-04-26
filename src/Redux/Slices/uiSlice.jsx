@@ -21,6 +21,8 @@ const initialState = {
   adminCompeletedOrder: false,
   technicianRequestDetails: false,
   ratingModalOpen: false,
+  serviceDetailModalOpen: false,
+  deviceDetailModalOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -87,6 +89,12 @@ const uiSlice = createSlice({
     setRatingModalOpen: (state) => {
       state.ratingModalOpen = !state.ratingModalOpen;
     },
+    setServiceDetailModalOpen: (state) => {
+      state.serviceDetailModalOpen = !state.serviceDetailModalOpen;
+    },
+    setDeviceDetailModalOpen: (state) => {
+      state.deviceDetailModalOpen = !state.deviceDetailModalOpen;
+    },
   },
 });
 
@@ -111,5 +119,7 @@ export const {
   setAdminCompeletedOrder,
   setTechnicianRequestDetails,
   setRatingModalOpen,
+  setServiceDetailModalOpen,
+  setDeviceDetailModalOpen,
 } = uiSlice.actions;
 export default uiSlice.reducer;

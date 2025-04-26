@@ -124,11 +124,12 @@ const TechnicianRequestList = ({ searchTerm }) => {
                         <>
                           <button
                             onClick={() => {
-                              setselectedRequestID(
-                                request?.technicianRequestID
-                              );
+                              //   setselectedRequestID(
+                              //     request?.technicianRequestID
+                              //   );
                               updateRequest({
-                                technicianRequestId: selectedRequestID,
+                                technicianRequestId:
+                                  request?.technicianRequestID,
                                 status: true,
                               });
                             }}
@@ -137,11 +138,12 @@ const TechnicianRequestList = ({ searchTerm }) => {
                           </button>
                           <button
                             onClick={() => {
-                              setselectedRequestID(
-                                request?.technicianRequestID
-                              );
+                              //   setselectedRequestID(
+                              //     request?.technicianRequestID
+                              //   );
                               updateRequest({
-                                technicianRequestId: selectedRequestID,
+                                technicianRequestId:
+                                  request?.technicianRequestID,
                                 status: false,
                               });
                             }}

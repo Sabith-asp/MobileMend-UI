@@ -54,14 +54,10 @@ const Navbar = () => {
               <Link to="/bookings">Bookings</Link>
             </li>
             <li>
-              <Link to="/technician">
-                <BsPersonFillGear className="text-xl" />
-              </Link>
+              <Link to="/services">Services</Link>
             </li>
             <li>
-              <Link to="/admin">
-                <MdAdminPanelSettings className="text-xl" />
-              </Link>
+              <Link to="/devices">Devices </Link>
             </li>
           </ul>
         </div>
@@ -91,14 +87,10 @@ const Navbar = () => {
             <Link to="/bookings">Bookings</Link>
           </li>
           <li>
-            <Link to="/technician">
-              <BsPersonFillGear className="text-xl" />
-            </Link>
+            <Link to="/services">Services</Link>
           </li>
           <li>
-            <Link to="/admin">
-              <MdAdminPanelSettings className="text-xl" />
-            </Link>
+            <Link to="/devices">Devices </Link>
           </li>
         </ul>
       </div>

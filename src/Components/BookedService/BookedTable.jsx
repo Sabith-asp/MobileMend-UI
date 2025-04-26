@@ -121,7 +121,7 @@ const BookedTable = () => {
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
-      {userBookingData?.data?.length > 1 ? (
+      {userBookingData?.data?.length > 0 ? (
         <TableBody>
           {userBookingData?.data?.map((booking) => (
             <TableRow key={booking?.bookingID}>

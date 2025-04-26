@@ -127,8 +127,12 @@ export const technicianApplication = async (data) => {
 export const getTechnicianDashboardData = async (data) => {
   try {
     var response = await api.get(`/Technician/dashboard-data`);
+    console.log(response);
+
     return response.data;
   } catch (error) {
+    console.log(error);
+
     throw error;
   }
 };

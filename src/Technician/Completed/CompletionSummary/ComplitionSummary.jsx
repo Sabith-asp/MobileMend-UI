@@ -6,10 +6,18 @@ import CostSummary from "./CostSummary";
 import { Textarea } from "@/Components/ui/textarea";
 import { useDispatch } from "react-redux";
 import { setComplitionSummaryModalOpen } from "@/Redux/Slices/uiSlice";
+import { getBookingById } from "@/Api/bookingApi";
+import { useQuery } from "@tanstack/react-query";
 
-const ComplitionSummary = ({ complitionData, setSelectedViewDetail }) => {
-  console.log(complitionData);
+const ComplitionSummary = ({ selectedBookingId, setSelectedBookingId }) => {
   const dispatch = useDispatch();
+
+  const { data: completedBookingDetail } = useQuery({
+    queryKey: ["CompletedBookingDetail"], // unique key
+    queryFn: () => getBookingById(selectedBookingId),
+    select: (response) => response?.data,
+  });
+  console.log(completedBookingDetail);
 
   return (
     <div>
@@ -19,25 +27,19 @@ const ComplitionSummary = ({ complitionData, setSelectedViewDetail }) => {
           Completed
         </span>
       </div>
-      <ServiceDetails complitionData={complitionData} />
-      <SparesDetails complitionData={complitionData} />
-      <CostSummary complitionData={complitionData} />
-      {complitionData?.paymentStatus == "Unpaid" ? (
-        <div className="py-3 float-end">
-          <button onClick={""} className="btn-primary-gray">
-            Cancel
-          </button>
-        </div>
-      ) : (
+      <ServiceDetails complitionData={completedBookingDetail} />
+      <SparesDetails complitionData={completedBookingDetail} />
+      <CostSummary complitionData={completedBookingDetail} />
+      {completedBookingDetail?.paymentStatus === "Pending" ? (
         <div>
-          <div className="mt-2">
+          {/* <div className="mt-2">
             <h6 className="mb-1">Technician notes</h6>
             <Textarea placeholder="Add repair notes" />
-          </div>
+          </div> */}
           <div className="py-3 float-end">
             <button
               onClick={() => {
-                setSelectedViewDetail(null);
+                setSelectedBookingId(null);
                 dispatch(setComplitionSummaryModalOpen());
               }}
               className="btn-primary-gray"
@@ -48,6 +50,39 @@ const ComplitionSummary = ({ complitionData, setSelectedViewDetail }) => {
               Notify Customer for Payment
             </button>
           </div>
+        </div>
+      ) : completedBookingDetail?.paymentStatus === "BookingPaid" ? (
+        <div>
+          {/* <div className="mt-2">
+            <h6 className="mb-1">Technician notes</h6>
+            <Textarea placeholder="Add repair notes" />
+          </div> */}
+          <div className="py-3 float-end">
+            <button
+              onClick={() => {
+                setSelectedBookingId(null);
+                dispatch(setComplitionSummaryModalOpen());
+              }}
+              className="btn-primary-gray"
+            >
+              Cancel
+            </button>
+            <button className="btn-primary-blue text-sm sm:text-sm">
+              Notify Customer for Spare Payment
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="py-3 float-end">
+          <button
+            onClick={() => {
+              setSelectedBookingId(null);
+              dispatch(setComplitionSummaryModalOpen());
+            }}
+            className="btn-primary-gray"
+          >
+            Cancel
+          </button>
         </div>
       )}
     </div>
