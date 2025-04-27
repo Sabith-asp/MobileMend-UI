@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/Components/ui/table";
 import Modal from "../../Components/Modal/Modal";
-import { FaCheck } from "react-icons/fa6";
+import { FaCheck, FaLocationArrow } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import AcceptService from "./AcceptService";
 import { Textarea } from "@/Components/ui/textarea";
@@ -24,6 +24,8 @@ import {
   setAcceptServiceModalOpen,
   setRejectServiceModalOpen,
 } from "@/Redux/Slices/uiSlice";
+import toast from "react-hot-toast";
+import { MdNotificationsActive } from "react-icons/md";
 
 const AssignedTable = () => {
   const { user } = useSelector((state) => state.user);
@@ -54,26 +56,93 @@ const AssignedTable = () => {
     }
   };
 
+  const showNotificationToast = (service) => {
+    toast.custom(
+      (t) => (
+        <div
+          className={`bg-white shadow-2xl border border-gray-300 rounded-xl p-4 w-80 transition-all ${
+            t.visible ? "animate-enter" : "animate-leave"
+          }`}
+        >
+          <h2 className="text-lg font-semibold mb-2 text-gray-800 flex items-center gap-2">
+            <MdNotificationsActive className="text-2xl text-blue-500" /> New
+            Service Assigned!
+          </h2>
+
+          <div className="text-sm text-gray-600 mb-3 space-y-1">
+            <p>
+              <strong>Customer:</strong> {service.customerName}
+            </p>
+            <p>
+              <strong>Device:</strong> {service.deviceName}
+            </p>
+            <p>
+              <strong>Issue:</strong> {service.issue}
+            </p>
+            <p className="flex items-center gap-1">
+              <FaLocationArrow className="text-blue-500" />
+              <span>
+                <strong>Location:</strong> {service.street},{service.city}
+              </span>
+            </p>
+          </div>
+
+          <div className="flex justify-between mt-3">
+            <button
+              onClick={() => {
+                setSelectedService(service);
+                dispatch(setAcceptServiceModalOpen());
+                toast.dismiss(t.id);
+              }}
+              className="flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              <FaCheck className="text-lg" /> Accept
+            </button>
+            <button
+              onClick={() => {
+                setSelectedRejectService(service.bookingID);
+                dispatch(setRejectServiceModalOpen());
+                toast.dismiss(t.id);
+              }}
+              className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              <RxCross2 className="text-lg" /> Reject
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 30000,
+      }
+    );
+  };
+
   useEffect(() => {
-    if (user.technicianId) {
-      // Initialize SignalR service with technicianId
-      const signalR = new SignalRService(user.technicianId);
-      signalR.startConnection();
+    let signalR;
 
-      // Listen for incoming notifications
-      signalR.listenForNotifications((message) => {
-        setNotifications((prevNotifications) => [
-          ...prevNotifications,
-          message,
-        ]);
-      });
-
-      return () => {
-        // Stop the SignalR connection on component unmount
-        signalR.stopConnection();
-      };
+    if (user?.technicianId) {
+      // If user is a technician
+      signalR = new SignalRService("technician", user.technicianId);
+    } else if (user?.id) {
+      // If user is a customer
+      signalR = new SignalRService("customer", user.id);
+      // 👆 id is optional here, just for structure.
     }
-  }, [user.technicianId]);
+
+    if (signalR) {
+      signalR.startConnection();
+      signalR.listenForNotifications((message) => {
+        // Show toast or popup
+        showNotificationToast(message);
+      });
+    }
+
+    return () => {
+      if (signalR) {
+        signalR.stopConnection();
+      }
+    };
+  }, [user]);
 
   const {
     data: assignedForTechncianData,
@@ -104,7 +173,7 @@ const AssignedTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {notifications.map((service) => (
+          {/* {notifications.map((service) => (
             <TableRow>
               <TableCell>{service?.bookingID}</TableCell>
               <TableCell>{service?.customerName}</TableCell>
@@ -144,7 +213,7 @@ const AssignedTable = () => {
                   <button
                     onClick={() => {
                       setSelectedRejectService(service.bookingID);
-                      setrejectModalOpen(true);
+                      dispatch(setRejectServiceModalOpen());
                     }}
                     className="bg-red-600 items-center flex text-white border-0 ml-3 text-xs btn-primary-gray"
                   >
@@ -196,7 +265,7 @@ const AssignedTable = () => {
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          ))} */}
 
           {assignedForTechncianData?.data.length > 0
             ? assignedForTechncianData?.data.map((service) => (

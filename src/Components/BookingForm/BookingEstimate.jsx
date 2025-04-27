@@ -28,7 +28,7 @@ const BookingEstimate = ({
     isError,
     error,
   } = useQuery({
-    queryKey: ["bookingEstimate"], // unique key
+    queryKey: ["bookingEstimate", selectedTechnicianID], // unique key
     queryFn: () =>
       getBookingEstimate(
         selectedTechnicianID,

@@ -136,3 +136,18 @@ export const getTechnicianDashboardData = async (data) => {
     throw error;
   }
 };
+
+export const notifySparePayment = async (bookingId) => {
+  try {
+    var response = await api.post(
+      `/Technician/notify-spare-payment?bookingId=${bookingId}`
+    );
+    console.log(response);
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+
+    throw error;
+  }
+};

@@ -59,7 +59,6 @@ const InProgressTable = () => {
   const [selectedUpdatingService, setSelectedUpdatingService] = useState(null);
   const [selectedAddSpare, setSelectedAddSpare] = useState(null);
   console.log(selectedUpdatingService);
-  const [complitionData, setComplitionData] = useState(null);
   const [currentStatus, setCurrentStatus] = useState({
     label: "Pending",
   });
@@ -79,8 +78,6 @@ const InProgressTable = () => {
       dispatch(setChangeServiceStatusModalOpen());
       inProgressOfTechnicianRefetch();
       if (data.status == "Completed") {
-        const complitionSummary = await getBookingById(data.bookingId);
-        setComplitionData(complitionSummary.data);
         dispatch(setComplitionSummaryModalOpen());
       }
       console.log(response);
@@ -193,7 +190,10 @@ const InProgressTable = () => {
         }}
         head="Repair Completion Summary"
       >
-        <ComplitionSummary complitionData={complitionData} />
+        <ComplitionSummary
+          selectedBookingId={selectedUpdatingService}
+          setSelectedBookingId={setSelectedUpdatingService}
+        />
       </Modal>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { IoCallOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsPersonFillGear } from "react-icons/bs";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { FiUser } from "react-icons/fi";
@@ -10,6 +10,11 @@ import ProfilePopover from "./ProfilePopover";
 const Navbar = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
   console.log(isAuthenticated);
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate("/", { state: { scrollTo: "booking-from" } });
+  };
   return (
     <nav className="navbar bg-base-100 shadow-sm px-2 sm:px-8">
       <div className="navbar-start">
@@ -95,7 +100,10 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-end">
-        <button className="btn-primary-rounded  text-xs font-normal hidden sm:flex">
+        <button
+          onClick={handleButtonClick}
+          className="btn-primary-rounded  text-xs font-normal hidden sm:flex"
+        >
           <IoCallOutline className="flex justify-center items-center mt-[2px] mr-1" />
           Book a Repair
         </button>

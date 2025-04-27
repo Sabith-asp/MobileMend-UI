@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "@/Api/authApi";
 import toast from "react-hot-toast";
 
@@ -68,7 +68,7 @@ const validationSchema = Yup.object({
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -82,6 +82,7 @@ const SignUp = () => {
       try {
         const res = await registerUser(values);
         toast.success("Registered successfully!");
+        toast.success("Verify Email And Login!");
         navigate("/login");
       } catch (err) {
         console.error("Registration failed", err);

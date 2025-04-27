@@ -10,6 +10,7 @@ import { Navigate } from "react-router-dom";
 export default function TechnicianApplicationForm() {
   const { user } = useSelector((state) => state.user);
   if (user?.role !== "User") return <Navigate to="/" />;
+
   const initialValues = {
     Experience: "",
     Specialization: "",
@@ -42,8 +43,7 @@ export default function TechnicianApplicationForm() {
       }),
   });
 
-  const handleSubmit = async (values) => {
-    console.log("Submitted Values:", values);
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     const formData = new FormData();
     formData.append("Experience", values.Experience);
     formData.append("Specialization", values.Specialization);
@@ -54,9 +54,13 @@ export default function TechnicianApplicationForm() {
     try {
       const response = await technicianApplication(formData);
       console.log(response);
+      toast.success("Application submitted successfully!"); // 👈 success toast
+      resetForm(); // 👈 clear form after successful submission
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setSubmitting(false); // 👈 stop loading
     }
   };
 
@@ -72,7 +76,7 @@ export default function TechnicianApplicationForm() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, isSubmitting }) => (
           <Form className="space-y-6">
             {/* Professional Info */}
             <div>
@@ -120,7 +124,7 @@ export default function TechnicianApplicationForm() {
                   as="textarea"
                   name="Bio"
                   rows="4"
-                  placeholder="Tell us Bio yourself and your experience"
+                  placeholder="Tell us about yourself and your experience"
                   className="border p-2 rounded w-full"
                 />
                 <ErrorMessage
@@ -169,9 +173,14 @@ export default function TechnicianApplicationForm() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-2 bg-primaryblue text-white rounded hover:bg-blue-700"
+                disabled={isSubmitting}
+                className={`px-6 py-2 rounded-2xl text-white ${
+                  isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primaryblue hover:bg-blue-700"
+                }`}
               >
-                Submit Application
+                {isSubmitting ? "Submitting..." : "Submit Application"}
               </button>
             </div>
           </Form>

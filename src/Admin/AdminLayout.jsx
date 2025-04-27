@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import AdminDashboard from "./Dashboard/AdminDashboard";
 import BookingsList from "./Bookings/BookingsList";
@@ -9,10 +9,23 @@ import Completed from "./Completed/Completed";
 import TechncianRequests from "./Technicians/TechnicianRequests";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const AdminLayout = () => {
+  const [loading, setLoading] = useState(true);
+
   const { user } = useSelector((state) => state.user);
-  if (user?.role !== "Admin") {
+  useEffect(() => {
+    if (user) {
+      setLoading(false);
+    }
+  }, [user]);
+
+  if (loading) {
+    return <Loader1 customCss={"h-screen"} />;
+  }
+
+  if (!user || user.role !== "Admin") {
     return <Navigate to={"/"} />;
   }
   return (

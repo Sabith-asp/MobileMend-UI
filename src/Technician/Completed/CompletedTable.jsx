@@ -54,6 +54,7 @@ const CompletedTable = () => {
             <TableHead>Date</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Spares Used</TableHead>
+            <TableHead>Payment Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -69,6 +70,7 @@ const CompletedTable = () => {
               </TableCell>
               <TableCell>{service?.street}</TableCell>
               <TableCell>{service?.spares.length}</TableCell>
+              <TableCell>{service?.paymentStatus}</TableCell>
 
               <TableCell className="flex">
                 {/* Rate modal */}
