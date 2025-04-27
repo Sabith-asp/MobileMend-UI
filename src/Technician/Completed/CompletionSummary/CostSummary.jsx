@@ -29,8 +29,10 @@ const CostSummary = ({ complitionData }) => {
           <span>Total</span>
           <span>
             ₹
-            {complitionData?.bookingCostDetails?.totalBookingCost +
-              complitionData?.sparesTotal}
+            {(
+              complitionData?.bookingCostDetails?.totalBookingCost +
+              complitionData?.sparesTotal
+            ).toFixed(2)}
           </span>
         </div>
       </div>

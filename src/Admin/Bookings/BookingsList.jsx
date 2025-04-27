@@ -116,6 +116,7 @@ const BookingsList = () => {
               <TableHead>Device</TableHead>
               <TableHead>Service</TableHead>
               <TableHead>Date & Time</TableHead>
+              <TableHead>Technician</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Price</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -141,6 +142,8 @@ const BookingsList = () => {
                       </span>
                     </div>
                   </TableCell>
+                  <TableCell>{booking?.technicianName}</TableCell>
+
                   <TableCell>
                     <StatusBadge status={booking?.bookingStatus} />
                   </TableCell>

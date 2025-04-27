@@ -47,30 +47,7 @@ import SelectTechnician from "./SelectTechnician";
 import PaymentSuccess from "./PaymentSuccess";
 import { bookService } from "@/Api/bookingApi";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-
-const device = [
-  {
-    deviceID: "40119687-0fad-11f0-898f-372f46d4552c",
-    deviceName: "iPhone 13",
-    brand: "Apple",
-    deviceType: "Smartphone",
-    model: "A2633",
-    releaseYear: 2021,
-    commonIssues: "Battery draining fast, Screen flickering",
-    repairableComponents: "Battery, Display, Charging Port",
-  },
-  {
-    deviceID: "6f518649-12d9-11f0-898f-372f46d4552c",
-    deviceName: "iPhone 15",
-    brand: "Apple",
-    deviceType: "Smartphone",
-    model: "A2633",
-    releaseYear: 2021,
-    commonIssues: "Battery draining fast, Screen flickering",
-    repairableComponents: "Battery, Display, Charging Port",
-  },
-];
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BookingForm = () => {
   const dispatch = useDispatch();
@@ -112,6 +89,17 @@ const BookingForm = () => {
 
   console.log("selected technician id from booking form", selectedTechnicianID);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.scrollTo === "booking-from") {
+      const element = document.getElementById("booking-from");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location.state]);
+
   useEffect(() => {
     if (addressData?.data?.length > 0) {
       setSelectedAddress(addressData.data[0]);
@@ -126,9 +114,6 @@ const BookingForm = () => {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      customerName: "",
-      email: "",
-      phone: "",
       issue: "",
       addressID: selectedAddress?.addressID,
       deviceID: "",
@@ -136,9 +121,6 @@ const BookingForm = () => {
       technicianID: selectedTechnicianID,
     },
     validationSchema: Yup.object({
-      customerName: Yup.string().required("Full Name is required"),
-      email: Yup.string().email("Invalid email").required("Email is required"),
-      phone: Yup.string().required("Phone number is required"),
       deviceID: Yup.string().required("Select device"),
       serviceID: Yup.string().required("Select service"),
       issue: Yup.string().required("Please describe your issue"),
@@ -168,7 +150,7 @@ const BookingForm = () => {
   });
 
   return (
-    <section id="booking" className="py-20 relative">
+    <section id="booking-from" className="py-20 relative">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -184,7 +166,7 @@ const BookingForm = () => {
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input
                     id="customerName"
@@ -196,10 +178,10 @@ const BookingForm = () => {
                       {formik.errors.customerName}
                     </p>
                   ) : null}
-                </div>
+                </div> */}
 
                 {/* Email */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
                   <Input
                     id="email"
@@ -212,10 +194,10 @@ const BookingForm = () => {
                       {formik.errors.email}
                     </p>
                   ) : null}
-                </div>
+                </div> */}
 
                 {/* Phone */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
                   <Input
                     id="phone"
@@ -227,7 +209,7 @@ const BookingForm = () => {
                       {formik.errors.phone}
                     </p>
                   ) : null}
-                </div>
+                </div> */}
 
                 {/* Device Model */}
                 <div className="space-y-2 ">

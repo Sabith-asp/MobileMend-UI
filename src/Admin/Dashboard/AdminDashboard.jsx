@@ -17,7 +17,7 @@ const AdminDashboard = () => {
       <AdminCharts AdminDashboardData={AdminDashboardData} />
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="col-span-1 border p-3 rounded-2xl border-gray-400">
-          <h6>Repairs by Status</h6>
+          <h6>Today Repairs by Status</h6>
           <div className="flex flex-col">
             <div>
               <div className="flex justify-between">
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
             <div>
               <div className="flex justify-between">
                 <span className="flex">
-                  <GoDotFill className="text-2xl text-blue-600 mr-1" /> In In
+                  <GoDotFill className="text-2xl text-blue-600 mr-1" /> In
                   Progress
                 </span>
                 <span>

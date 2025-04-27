@@ -10,6 +10,8 @@ import TDashboard from "./Technician/Dashboard/TDashboard";
 import TechnicianLayout from "./Technician/TechnicianLayout";
 import AdminLayout from "./Admin/AdminLayout";
 import TechnicianApplicationForm from "./Components/TechnicianApplication/TechnicianApplicationForm";
+import Services from "./Components/Serivces/Services";
+import Devices from "./Components/Devices/Devices";
 
 const Routers = () => {
   return (
@@ -20,6 +22,8 @@ const Routers = () => {
           <Route path="login" element={<Auth item={<Login />} />} />
           <Route path="signup" element={<Auth item={<SignUp />} />} />
           <Route path="bookings" element={<BookedService />} />
+          <Route path="services" element={<Services />} />
+          <Route path="devices" element={<Devices />} />
           <Route
             path="become-technician"
             element={<TechnicianApplicationForm />}

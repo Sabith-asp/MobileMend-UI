@@ -62,17 +62,35 @@ export default function ProfilePopover() {
               </div>
             </div>
             <ul className="text-sm text-gray-700 divide-y divide-gray-100">
-              <li className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out">
+              {/* <li className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out">
                 <FiSettings className="text-gray-600" />
                 <span>Settings</span>
-              </li>
-              {user?.role !== "Technician" && (
+              </li> */}
+              {user?.role == "User" && (
                 <li
                   onClick={() => navigate("/become-technician")}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out"
                 >
                   <MdEngineering className="text-gray-600" />
                   <span>Become Technician</span>
+                </li>
+              )}
+              {user?.role == "Technician" && (
+                <li
+                  onClick={() => navigate("/technician")}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out"
+                >
+                  <MdEngineering className="text-gray-600" />
+                  <span>Technician Dashboard</span>
+                </li>
+              )}
+              {user?.role == "Admin" && (
+                <li
+                  onClick={() => navigate("/admin")}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out"
+                >
+                  <MdEngineering className="text-gray-600" />
+                  <span>Admin Dashboard</span>
                 </li>
               )}
               <li

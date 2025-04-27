@@ -25,7 +25,7 @@ const CompletedTable = () => {
   const { user } = useSelector((state) => state.user);
   const { complitionSummaryModalOpen } = useSelector((state) => state.ui);
 
-  const [selectedViewDetail, setSelectedViewDetail] = useState(null);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
 
   const dispatch = useDispatch();
   const {
@@ -42,18 +42,6 @@ const CompletedTable = () => {
 
   console.log(completedTechncianData);
 
-  const closeViewModal = () => {
-    setviewDetailModal(false);
-  };
-
-  const [rejectModalOpen, setrejectModalOpen] = useState(false);
-
-  const closeRejectModal = () => {
-    setrejectModalOpen(false);
-  };
-
-  // const complitionSummary = await getBookingById(data.bookingId);
-
   return (
     <div className="booked-table bg-white mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
       <Table>
@@ -66,6 +54,7 @@ const CompletedTable = () => {
             <TableHead>Date</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Spares Used</TableHead>
+            <TableHead>Payment Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -81,13 +70,14 @@ const CompletedTable = () => {
               </TableCell>
               <TableCell>{service?.street}</TableCell>
               <TableCell>{service?.spares.length}</TableCell>
+              <TableCell>{service?.paymentStatus}</TableCell>
 
               <TableCell className="flex">
                 {/* Rate modal */}
                 <div className="">
                   <button
                     onClick={() => {
-                      setSelectedViewDetail(service);
+                      setSelectedBookingId(service?.bookingID);
                       dispatch(setComplitionSummaryModalOpen());
                     }}
                     className="text-xs flex items-center btn-primary-blue"
@@ -98,14 +88,14 @@ const CompletedTable = () => {
                   <Modal
                     isOpen={complitionSummaryModalOpen}
                     onClose={() => {
-                      setSelectedViewDetail(null);
+                      setSelectedBookingId(null);
                       dispatch(setComplitionSummaryModalOpen());
                     }}
                     head={`Service Request Details`}
                   >
                     <ComplitionSummary
-                      setSelectedViewDetail={setSelectedViewDetail}
-                      complitionData={selectedViewDetail}
+                      setSelectedBookingId={setSelectedBookingId}
+                      selectedBookingId={selectedBookingId}
                     />
                   </Modal>
                 </div>

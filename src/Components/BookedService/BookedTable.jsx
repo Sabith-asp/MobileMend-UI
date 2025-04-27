@@ -60,6 +60,12 @@ export const StatusBadge = ({ status }) => {
           Started
         </span>
       );
+    case "Reassigned":
+      return (
+        <span className="whitespace-nowrap text-white text-xs font-medium  bg-rose-500 p-1 px-2 rounded-full">
+          Reassigned
+        </span>
+      );
     case "Completed":
       return (
         <span className="whitespace-nowrap text-white text-xs font-medium  bg-green-600 p-1 px-2 rounded-full">
@@ -118,10 +124,12 @@ const BookedTable = () => {
           <TableHead>Status</TableHead>
           <TableHead>Technician</TableHead>
           <TableHead>Rate Technician</TableHead>
+          <TableHead>Payment Status</TableHead>
+
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
-      {userBookingData?.data?.length > 1 ? (
+      {userBookingData?.data?.length > 0 ? (
         <TableBody>
           {userBookingData?.data?.map((booking) => (
             <TableRow key={booking?.bookingID}>
@@ -168,6 +176,8 @@ const BookedTable = () => {
                   </>
                 )}
               </TableCell>
+              <TableCell>{booking?.paymentStatus}</TableCell>
+
               <TableCell>
                 {/* view modal */}
                 <button

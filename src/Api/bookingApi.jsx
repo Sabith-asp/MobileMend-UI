@@ -95,3 +95,15 @@ export const getBookingById = async (bookingId) => {
     throw error;
   }
 };
+export const updatePayment = async (bookingId) => {
+  try {
+    const response = await api.patch(
+      `/Booking/update-payment?bookingId=${bookingId}`
+    );
+    console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
