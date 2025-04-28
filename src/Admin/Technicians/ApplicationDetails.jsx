@@ -2,7 +2,43 @@ import React from "react";
 import { FaFileAlt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const ApplicationDetails = ({ application }) => {
-  console.log(application);
+  // Function to handle document download
+  const downloadDocument = (base64Data) => {
+    // Decode the base64 string into a byte array
+    const byteCharacters = atob(base64Data); // Decoding the base64 string to raw binary
+    const byteArrays = [];
+
+    // Convert the raw binary into a byte array (Uint8Array)
+    for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+      const slice = byteCharacters.slice(offset, offset + 1024);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      byteArrays.push(new Uint8Array(byteNumbers));
+    }
+
+    // Combine the byte arrays into one large Uint8Array
+    const byteArray = new Uint8Array(
+      byteArrays.reduce(
+        (acc, byteArray) => acc.concat(Array.from(byteArray)),
+        []
+      )
+    );
+
+    // Create a Blob from the byteArray
+    const blob = new Blob([byteArray], { type: "application/pdf" });
+
+    // Create a download link and trigger the download
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "document.pdf"; // You can adjust the name based on your logic
+    link.click();
+
+    // Clean up the URL object after use
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="max-w-md mx-auto mt-2 p-6 bg-white rounded-xl shadow-lg border text-sm space-y-4">
@@ -51,7 +87,7 @@ const ApplicationDetails = ({ application }) => {
           </p>
           <p>
             <span className="font-semibold">Bio:</span>
-            <span className="block truncate">{application.bio}</span>
+            <span className="block truncate">{application?.bio}</span>
           </p>
         </div>
       </div>
@@ -63,15 +99,21 @@ const ApplicationDetails = ({ application }) => {
             <FaFileAlt className="text-blue-500" />
             <span className="text-gray-700">Resume/CV</span>
           </div>
-          <a
-            href={application?.resumeUrl}
-            className="text-blue-600 hover:underline text-sm"
-          >
-            View
-          </a>
+          {/* Show the document as a download link */}
+          {application?.documentData ? (
+            <button
+              onClick={() => downloadDocument(application.documentData)}
+              className="text-blue-600 hover:underline text-sm"
+            >
+              Download
+            </button>
+          ) : (
+            <span className="text-gray-500 text-xs">No document available</span>
+          )}
         </div>
       </div>
 
+      {/* Uncomment these if needed */}
       {/* <div className="flex justify-end gap-2 pt-4">
         <button className="flex items-center gap-1 px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition">
           <FaTimesCircle /> Reject Application
