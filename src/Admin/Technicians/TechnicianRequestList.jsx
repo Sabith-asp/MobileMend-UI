@@ -31,12 +31,17 @@ import { FcApprove } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import { setTechnicianRequestDetails } from "@/Redux/Slices/uiSlice";
 import ApplicationDetails from "./ApplicationDetails";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const TechnicianRequestList = ({ searchTerm }) => {
   const [selectedRequestID, setselectedRequestID] = useState(null);
   const [selectedApplicationDetail, setSelectedApplicationDetail] = useState();
 
-  const { data: technicinaRequestsData, refetch: requestRefetch } = useQuery({
+  const {
+    data: technicinaRequestsData,
+    refetch: requestRefetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["userBookings", searchTerm],
     queryFn: () =>
       getTechnicianRequests({
@@ -61,7 +66,7 @@ const TechnicianRequestList = ({ searchTerm }) => {
   };
 
   return (
-    <div className=" mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
+    <div className="mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
       <Table>
         <TableHeader>
           <TableRow>
@@ -71,14 +76,19 @@ const TechnicianRequestList = ({ searchTerm }) => {
             <TableHead>Specialization</TableHead>
             <TableHead>Applied Date</TableHead>
             <TableHead>Status</TableHead>
-            {/* <TableHead>Actions</TableHead> */}
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {technicinaRequestsData?.data?.length > 0 ? (
-            technicinaRequestsData?.data?.map((request) => (
-              <TableRow>
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center h-24">
+                <Loader1 />
+              </TableCell>
+            </TableRow>
+          ) : technicinaRequestsData?.data?.length > 0 ? (
+            technicinaRequestsData.data.map((request) => (
+              <TableRow key={request?.technicianRequestID}>
                 <TableCell className="font-medium">
                   {request?.technicianRequestID}
                 </TableCell>
@@ -95,15 +105,18 @@ const TechnicianRequestList = ({ searchTerm }) => {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell cla>
+                <TableCell>
                   <span className="flex items-center">
                     <FaRegClock className="mr-2" />
                     {request?.experience} years
                   </span>
                 </TableCell>
                 <TableCell>
-                  {request?.specialization?.split(",").map((sp) => (
-                    <span className="p-1 px-2 bg-blue-200 text-primaryblue text-xs rounded-full mr-1">
+                  {request?.specialization?.split(",").map((sp, index) => (
+                    <span
+                      key={index}
+                      className="p-1 px-2 bg-blue-200 text-primaryblue text-xs rounded-full mr-1"
+                    >
                       {sp}
                     </span>
                   ))}
@@ -116,37 +129,30 @@ const TechnicianRequestList = ({ searchTerm }) => {
                 <TableCell>
                   <StatusBadge status={request?.status} />
                 </TableCell>
-
                 <TableCell className="text-right">
                   <div className="flex justify-end">
-                    {request?.status != "Approved" &&
-                      request?.status != "Rejected" && (
+                    {request?.status !== "Approved" &&
+                      request?.status !== "Rejected" && (
                         <>
                           <button
-                            onClick={() => {
-                              //   setselectedRequestID(
-                              //     request?.technicianRequestID
-                              //   );
+                            onClick={() =>
                               updateRequest({
                                 technicianRequestId:
                                   request?.technicianRequestID,
                                 status: true,
-                              });
-                            }}
+                              })
+                            }
                           >
                             <FcApprove className="text-3xl" />
                           </button>
                           <button
-                            onClick={() => {
-                              //   setselectedRequestID(
-                              //     request?.technicianRequestID
-                              //   );
+                            onClick={() =>
                               updateRequest({
                                 technicianRequestId:
                                   request?.technicianRequestID,
                                 status: false,
-                              });
-                            }}
+                              })
+                            }
                           >
                             <FcDisapprove className="text-3xl" />
                           </button>
@@ -166,19 +172,18 @@ const TechnicianRequestList = ({ searchTerm }) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="text-center h-24">
+              <TableCell colSpan={7} className="text-center h-24">
                 No requests found. Try adjusting your search or filters.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+
       <Modal
         isOpen={technicianRequestDetails}
         head={"Technician Request Details"}
-        onClose={() => {
-          dispatch(setTechnicianRequestDetails());
-        }}
+        onClose={() => dispatch(setTechnicianRequestDetails())}
       >
         <ApplicationDetails application={selectedApplicationDetail} />
       </Modal>

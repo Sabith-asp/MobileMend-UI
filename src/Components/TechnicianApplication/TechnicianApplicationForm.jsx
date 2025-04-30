@@ -65,7 +65,7 @@ export default function TechnicianApplicationForm() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md">
+    <div className="max-w-4xl my-4 mx-auto p-6 bg-white rounded-2xl shadow-md">
       <h2 className="text-2xl font-bold mb-6">🧑‍🔧 Technician Application</h2>
       <p className="mb-6 text-sm text-gray-600">
         Apply to join our team of professional repair technicians

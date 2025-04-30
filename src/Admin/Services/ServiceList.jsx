@@ -23,6 +23,7 @@ import {
   setServiceDeleteModalOpen,
 } from "@/Redux/Slices/uiSlice";
 import DeleteService from "./DeleteService";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const ServiceList = ({ searchTerm }) => {
   const [selectedServiceID, setselectedServiceID] = useState(null);
@@ -35,17 +36,19 @@ const ServiceList = ({ searchTerm }) => {
     (state) => state.ui
   );
   const dispatch = useDispatch();
-  const { data: adminServiceData, refetch: adminServiceDataRefetch } = useQuery(
-    {
-      queryKey: ["adminService", searchTerm, selectedServiceID],
-      queryFn: () => getServices({ search: searchTerm }),
-    }
-  );
+  const {
+    data: adminServiceData,
+    refetch: adminServiceDataRefetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ["adminService", searchTerm, selectedServiceID],
+    queryFn: () => getServices({ search: searchTerm }),
+  });
 
   console.log(adminServiceData);
 
   return (
-    <div className=" mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
+    <div className="mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
       <Table>
         <TableHeader>
           <TableRow>
@@ -60,9 +63,15 @@ const ServiceList = ({ searchTerm }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {adminServiceData?.data?.length > 0 ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center h-24">
+                <Loader1 />
+              </TableCell>
+            </TableRow>
+          ) : adminServiceData?.data?.length > 0 ? (
             adminServiceData?.data?.map((service) => (
-              <TableRow>
+              <TableRow key={service?.serviceID}>
                 <TableCell className="font-medium">
                   {service?.serviceID}
                 </TableCell>
@@ -89,11 +98,9 @@ const ServiceList = ({ searchTerm }) => {
                     <button
                       onClick={() => {
                         setselectedServiceID(service?.serviceID);
-                        console.log(service?.serviceID);
-
                         dispatch(setAddEditServiceModalOpen());
                       }}
-                      className=" text-lg mr-2"
+                      className="text-lg mr-2"
                     >
                       <FaRegEdit />
                     </button>
@@ -102,7 +109,7 @@ const ServiceList = ({ searchTerm }) => {
                         setselectedServiceID(service?.serviceID);
                         dispatch(setServiceDeleteModalOpen());
                       }}
-                      className="mt-[2px]  text-red-600 text-xl"
+                      className="mt-[2px] text-red-600 text-xl"
                     >
                       <MdDeleteOutline />
                     </button>
@@ -119,6 +126,7 @@ const ServiceList = ({ searchTerm }) => {
           )}
         </TableBody>
       </Table>
+
       <Modal
         isOpen={addEditServiceModalOpen}
         head={selectedServiceID ? "Edit Service" : "Add Service"}

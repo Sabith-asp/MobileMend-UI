@@ -6,15 +6,21 @@ import { getDashBoardData } from "@/Api/adminApi";
 import { useQuery } from "@tanstack/react-query";
 
 const AdminDashboard = () => {
-  const { data: AdminDashboardData } = useQuery({
+  const { data: AdminDashboardData, isLoading } = useQuery({
     queryKey: ["adminDashboard"],
     queryFn: () => getDashBoardData(),
     select: (data) => data?.data,
   });
   return (
     <>
-      <AdminOverview AdminDashboardData={AdminDashboardData} />
-      <AdminCharts AdminDashboardData={AdminDashboardData} />
+      <AdminOverview
+        isLoading={isLoading}
+        AdminDashboardData={AdminDashboardData}
+      />
+      <AdminCharts
+        isLoading={isLoading}
+        AdminDashboardData={AdminDashboardData}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="col-span-1 border p-3 rounded-2xl border-gray-400">
           <h6>Today Repairs by Status</h6>

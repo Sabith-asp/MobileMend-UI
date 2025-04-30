@@ -5,6 +5,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { StatusBadge } from "../BookedService/BookedTable";
 import { FaStar } from "react-icons/fa";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import Loader1 from "../Loader/Loader1";
 
 const UserBookingDetail = ({ bookingId }) => {
   const { data: bookingByIdData, isLoading } = useQuery({
@@ -15,7 +16,11 @@ const UserBookingDetail = ({ bookingId }) => {
   const [showMore, setShowMore] = useState(false);
 
   if (isLoading) {
-    return <div className="text-center p-5">Loading booking details...</div>;
+    return (
+      <div className="text-center p-5">
+        <Loader1 />
+      </div>
+    );
   }
 
   if (!bookingByIdData?.data) {

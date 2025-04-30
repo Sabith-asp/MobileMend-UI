@@ -34,50 +34,20 @@ import { useQuery } from "@tanstack/react-query";
 import { getBookings } from "@/Api/bookingApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setAdminBookingDetailModalOpen } from "@/Redux/Slices/uiSlice";
-
-// Mock data for bookings
+import Loader1 from "@/Components/Loader/Loader1";
 
 const BookingsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  console.log(searchTerm);
-
-  //   const [adminViewBookDetail, setAdminViewBookDetail] = useState(false);
-  //   const closeAdminViewBookDetail = () => {
-  //     setAdminViewBookDetail(false);
-  //   };
-  // Filter bookings based on search term and status
-
   const dispatch = useDispatch();
   const { adminBookingDetailModalOpen } = useSelector((state) => state.ui);
 
-  //   const filteredBookings = mockBookings.filter((booking) => {
-  //     const matchesSearch =
-  //       booking.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       booking.device.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       booking.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       booking.id.toLowerCase().includes(searchTerm.toLowerCase());
-
-  //     const matchesStatus =
-  //       statusFilter === "all" || booking.status === statusFilter;
-
-  //     return matchesSearch && matchesStatus;
-  //   });
-
-  //   const viewBookingDetails = (booking) => {
-  //     setSelectedBooking(booking);
-  //     setIsDetailsOpen(true);
-  //   };
-
-  const { data: adminBookingData } = useQuery({
+  const { data: adminBookingData, isLoading } = useQuery({
     queryKey: ["adminBooking", statusFilter, searchTerm],
     queryFn: () =>
       getBookings({ status: statusFilter, searchString: searchTerm }),
   });
-
-  console.log(adminBookingData);
 
   return (
     <div className="space-y-4">
@@ -85,7 +55,6 @@ const BookingsList = () => {
         <h2 className="text-2xl font-bold">All Bookings</h2>
         <div className="flex items-center gap-2">
           <div className="relative w-[250px] hidden lg:block">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search bookings..."
@@ -123,7 +92,13 @@ const BookingsList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {adminBookingData?.data?.length > 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center h-24">
+                  <Loader1 />
+                </TableCell>
+              </TableRow>
+            ) : adminBookingData?.data?.length > 0 ? (
               adminBookingData?.data?.map((booking) => (
                 <TableRow key={booking.bookingID}>
                   <TableCell className="font-medium">
@@ -143,7 +118,6 @@ const BookingsList = () => {
                     </div>
                   </TableCell>
                   <TableCell>{booking?.technicianName}</TableCell>
-
                   <TableCell>
                     <StatusBadge status={booking?.bookingStatus} />
                   </TableCell>
@@ -170,16 +144,17 @@ const BookingsList = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center h-24">
+                <TableCell colSpan={9} className="text-center h-24">
                   No bookings found. Try adjusting your search or filters.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
         <Modal
           isOpen={adminBookingDetailModalOpen}
-          head={`Booking Details - ${selectedBooking?.bookingID}`}
+          head={`Booking Details - ${selectedBooking?.bookingID}`}
           onClose={() => {
             dispatch(setAdminBookingDetailModalOpen());
             setSelectedBooking(null);

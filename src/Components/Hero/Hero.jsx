@@ -3,8 +3,13 @@ import { FaArrowRight } from "react-icons/fa";
 import { AiOutlineSafety } from "react-icons/ai";
 import { MdOutlineLocationOn } from "react-icons/md";
 import { FiClock } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const handleButtonClick = () => {
+    navigate("/", { state: { scrollTo: "booking-from" } });
+  };
   return (
     <div className="container mx-auto">
       <div className=" h-[90vh] grid grid-cols-1 md:grid-cols-[40%_60%]">
@@ -22,11 +27,14 @@ const Hero = () => {
               to visit a store or ship your device.
             </p>
             <div className="flex mt-6">
-              <button className="btn-primary-rounded flex text-xs font-normal">
+              <button
+                onClick={handleButtonClick}
+                className="btn-primary-rounded flex text-xs font-normal"
+              >
                 Book a Repair Now <FaArrowRight className="mt-[2px] ml-3" />
               </button>
               <button className="btn-light-rounded ml-3 text-xs font-normal">
-                View Services
+                <Link to="/services">View Services</Link>
               </button>
             </div>
             <div className="flex mt-7">

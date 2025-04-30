@@ -24,6 +24,7 @@ import Modal from "../Modal/Modal";
 import DeviceDetail from "./DeviceDetail";
 import { useDispatch, useSelector } from "react-redux";
 import { setDeviceDetailModalOpen } from "@/Redux/Slices/uiSlice";
+import Loader1 from "../Loader/Loader1";
 
 const Devices = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -98,7 +99,7 @@ const Devices = () => {
 
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <Loader1 />
           </div>
         ) : devices.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

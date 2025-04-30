@@ -23,6 +23,7 @@ import {
   setDeviceManagementModalOpen,
 } from "@/Redux/Slices/uiSlice";
 import DeleteDevice from "./DeleteDevice";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const DeviceList = ({ searchTerm }) => {
   const [selectedDeviceId, setselectedDeviceId] = useState(null);
@@ -35,7 +36,11 @@ const DeviceList = ({ searchTerm }) => {
 
   const { deviceManagementModalOpen } = useSelector((state) => state.ui);
   const dispatch = useDispatch();
-  const { data: adminDeviceData, refetch: adminDeviceDataRefetch } = useQuery({
+  const {
+    data: adminDeviceData,
+    refetch: adminDeviceDataRefetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["adminDevices", searchTerm],
     queryFn: () => getDevices({ search: searchTerm }),
   });
@@ -43,7 +48,7 @@ const DeviceList = ({ searchTerm }) => {
   console.log(adminDeviceData);
 
   return (
-    <div className=" mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
+    <div className="mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
       <Table>
         <TableHeader>
           <TableRow>
@@ -59,9 +64,15 @@ const DeviceList = ({ searchTerm }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {adminDeviceData?.data?.length > 0 ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center h-24">
+                <Loader1 />
+              </TableCell>
+            </TableRow>
+          ) : adminDeviceData?.data?.length > 0 ? (
             adminDeviceData?.data?.map((device) => (
-              <TableRow>
+              <TableRow key={device?.deviceID}>
                 <TableCell className="font-medium">
                   {device?.deviceID}
                 </TableCell>
@@ -71,15 +82,23 @@ const DeviceList = ({ searchTerm }) => {
                 <TableCell>{device?.deviceType}</TableCell>
                 <TableCell>{device?.releaseYear}</TableCell>
                 <TableCell>
-                  {device?.repairableComponents?.split(",").map((component) => (
-                    <span className="whitespace-nowrap text-xs p-1 px-2 mr-1 border border-gray-400 rounded-full">
-                      {component}
-                    </span>
-                  ))}
+                  {device?.repairableComponents
+                    ?.split(",")
+                    .map((component, index) => (
+                      <span
+                        key={index}
+                        className="whitespace-nowrap text-xs p-1 px-2 mr-1 border border-gray-400 rounded-full"
+                      >
+                        {component}
+                      </span>
+                    ))}
                 </TableCell>
                 <TableCell className="max-w-[90px] overflow-hidden whitespace-nowrap text-ellipsis">
-                  {device?.commonIssues?.split(",").map((component) => (
-                    <span className="whitespace-nowrap text-xs p-1 px-2 mr-1 border border-gray-400 rounded-full">
+                  {device?.commonIssues?.split(",").map((component, index) => (
+                    <span
+                      key={index}
+                      className="whitespace-nowrap text-xs p-1 px-2 mr-1 border border-gray-400 rounded-full"
+                    >
                       {component}
                     </span>
                   ))}
@@ -91,7 +110,7 @@ const DeviceList = ({ searchTerm }) => {
                         setselectedDeviceId(device?.deviceID);
                         dispatch(setDeviceManagementModalOpen());
                       }}
-                      className=" text-lg mr-2"
+                      className="text-lg mr-2"
                     >
                       <FaRegEdit />
                     </button>
@@ -100,7 +119,7 @@ const DeviceList = ({ searchTerm }) => {
                         setselectedDeviceId(device?.deviceID);
                         dispatch(setDeviceDeleteModalOpen());
                       }}
-                      className="mt-[2px]  text-red-600 text-xl"
+                      className="mt-[2px] text-red-600 text-xl"
                     >
                       <MdDeleteOutline />
                     </button>
@@ -117,6 +136,7 @@ const DeviceList = ({ searchTerm }) => {
           )}
         </TableBody>
       </Table>
+
       <Modal
         isOpen={deviceManagementModalOpen}
         head={selectedDeviceId ? "Edit Device" : "Add Device"}
@@ -131,6 +151,7 @@ const DeviceList = ({ searchTerm }) => {
           selectedDeviceId={selectedDeviceId}
         />
       </Modal>
+
       <Modal
         isOpen={deviceDeleteModalOpen}
         head={"Delete Device"}

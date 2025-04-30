@@ -23,15 +23,19 @@ import {
   setAdminBookingDetailModalOpen,
   setAdminCompeletedOrder,
 } from "@/Redux/Slices/uiSlice";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const CompletedList = ({ searchTerm }) => {
   const dispatch = useDispatch();
-  const { data: completedBookingsData, refetch: completedBookingsDataRefetch } =
-    useQuery({
-      queryKey: ["completedBookings", searchTerm],
-      queryFn: () =>
-        getBookings({ searchString: searchTerm, status: "Completed" }),
-    });
+  const {
+    data: completedBookingsData,
+    refetch: completedBookingsDataRefetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ["completedBookings", searchTerm],
+    queryFn: () =>
+      getBookings({ searchString: searchTerm, status: "Completed" }),
+  });
 
   console.log(completedBookingsData);
 
@@ -57,22 +61,26 @@ const CompletedList = ({ searchTerm }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {completedBookingsData?.data?.length > 0 ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center h-24">
+                <Loader1 />
+              </TableCell>
+            </TableRow>
+          ) : completedBookingsData?.data?.length > 0 ? (
             completedBookingsData?.data?.map((booking) => (
-              <TableRow>
+              <TableRow key={booking?.bookingID}>
                 <TableCell>{booking?.bookingID}</TableCell>
                 <TableCell>{booking?.customerName}</TableCell>
                 <TableCell>{booking?.deviceName}</TableCell>
                 <TableCell>{booking?.issue}</TableCell>
-                <TableCell className=" ">
+                <TableCell>
                   {new Date(booking?.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell>{booking?.street}</TableCell>
                 <TableCell>{booking?.spares?.length}</TableCell>
-
                 <TableCell className="flex">
-                  {/* Rate modal */}
-                  <div className="">
+                  <div>
                     <button
                       onClick={() => {
                         setSelectedBooking(booking);
@@ -93,13 +101,6 @@ const CompletedList = ({ searchTerm }) => {
                     >
                       <CompletedDetail selectedBooking={selectedBooking} />
                     </Modal>
-                    {/* <Modal
-                      isOpen={isRefundModalOpen}
-                      onClose={closeRefundModal}
-                      head={`Process Refund`}
-                    >
-                      <ProcessRefund closeRefundModal={closeRefundModal} />
-                    </Modal> */}
                   </div>
                 </TableCell>
               </TableRow>
