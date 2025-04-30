@@ -10,6 +10,7 @@ import {
 } from "@/Api/bookingApi";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import Loader1 from "../Loader/Loader1";
 
 const SelectTechnician = ({
   selectedTechnicianID,
@@ -52,7 +53,7 @@ const SelectTechnician = ({
     }
   };
 
-  const { data: bestNearestTechnicians } = useQuery({
+  const { data: bestNearestTechnicians, isLoading } = useQuery({
     queryKey: ["bestTechnicians"],
     queryFn: () =>
       getNearestBestTechnicians(selectedDeviceID, selectedAddressID),
@@ -75,8 +76,12 @@ const SelectTechnician = ({
       <div className="mt-2 ">
         <h6 className="font-medium mb-2">Best Nearest Technicians</h6>
 
-        {bestNearestTechnicians?.data.length == 0 ? (
-          <h6>No nrearest technicin available</h6>
+        {isLoading ? (
+          <div className="text-center p-5">
+            <Loader1 />
+          </div>
+        ) : bestNearestTechnicians?.data?.length === 0 ? (
+          <h6>No available nearest technician</h6>
         ) : (
           bestNearestTechnicians?.data?.map((tech) => (
             <div

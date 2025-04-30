@@ -2,37 +2,32 @@ import React, { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/Components/ui/table";
 import Modal from "../../Components/Modal/Modal";
-import { FaCheck } from "react-icons/fa6";
-import { RxCross2 } from "react-icons/rx";
-import AcceptService from "../Assigned/AcceptService";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { Textarea } from "@/Components/ui/textarea";
 import ComplitionSummary from "./CompletionSummary/ComplitionSummary";
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { getBookingsByTechnicianIdAndStatus } from "@/Api/technicianApi";
 import { setComplitionSummaryModalOpen } from "@/Redux/Slices/uiSlice";
+import Loader1 from "@/Components/Loader/Loader1"; // Make sure this is your loader component
 
 const CompletedTable = () => {
-  const [reason, setReason] = useState("");
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
   const { user } = useSelector((state) => state.user);
   const { complitionSummaryModalOpen } = useSelector((state) => state.ui);
-
-  const [selectedBookingId, setSelectedBookingId] = useState(null);
-
   const dispatch = useDispatch();
+
   const {
     data: completedTechncianData,
     refetch: completedTechncianDataRefetch,
+    isLoading,
   } = useQuery({
-    queryKey: ["completedTechncian"], // unique key
+    queryKey: ["completedTechncian"],
     queryFn: () =>
       getBookingsByTechnicianIdAndStatus(
         user.technicianId ? user.technicianId : null,
@@ -40,7 +35,7 @@ const CompletedTable = () => {
       ),
   });
 
-  console.log(completedTechncianData);
+  const bookings = completedTechncianData?.data || [];
 
   return (
     <div className="booked-table bg-white mt-3 rounded-xl shadow-2xl border border-gray-400 p-2">
@@ -59,22 +54,34 @@ const CompletedTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {completedTechncianData?.data.map((service) => (
+          {isLoading ? (
             <TableRow>
-              <TableCell>{service?.bookingID}</TableCell>
-              <TableCell>{service?.customerName}</TableCell>
-              <TableCell>{service?.deviceName}</TableCell>
-              <TableCell>{service?.serviceName}</TableCell>
-              <TableCell className=" ">
-                {new Date(service?.createdAt).toLocaleDateString()}
+              <TableCell colSpan={9} className="text-center py-6">
+                <div className="flex justify-center items-center">
+                  <Loader1 />
+                </div>
               </TableCell>
-              <TableCell>{service?.street}</TableCell>
-              <TableCell>{service?.spares.length}</TableCell>
-              <TableCell>{service?.paymentStatus}</TableCell>
-
-              <TableCell className="flex">
-                {/* Rate modal */}
-                <div className="">
+            </TableRow>
+          ) : bookings.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={9} className="text-center py-6 text-gray-500">
+                No completed services found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            bookings.map((service) => (
+              <TableRow key={service?.bookingID}>
+                <TableCell>{service?.bookingID}</TableCell>
+                <TableCell>{service?.customerName}</TableCell>
+                <TableCell>{service?.deviceName}</TableCell>
+                <TableCell>{service?.serviceName}</TableCell>
+                <TableCell>
+                  {new Date(service?.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{service?.street}</TableCell>
+                <TableCell>{service?.spares?.length || 0}</TableCell>
+                <TableCell>{service?.paymentStatus}</TableCell>
+                <TableCell className="flex">
                   <button
                     onClick={() => {
                       setSelectedBookingId(service?.bookingID);
@@ -82,7 +89,7 @@ const CompletedTable = () => {
                     }}
                     className="text-xs flex items-center btn-primary-blue"
                   >
-                    <IoDocumentTextOutline />
+                    <IoDocumentTextOutline className="mr-1" />
                     View Details
                   </button>
                   <Modal
@@ -98,10 +105,10 @@ const CompletedTable = () => {
                       selectedBookingId={selectedBookingId}
                     />
                   </Modal>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

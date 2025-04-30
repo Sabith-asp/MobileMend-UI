@@ -1,8 +1,7 @@
+import Loader2 from "@/Components/Loader/Loader2";
 import React from "react";
 
-const AdminOverview = ({ AdminDashboardData }) => {
-  console.log(AdminDashboardData);
-
+const AdminOverview = ({ AdminDashboardData, isLoading }) => {
   return (
     <div className="container">
       <div className="w-[100%]">
@@ -10,25 +9,40 @@ const AdminOverview = ({ AdminDashboardData }) => {
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">
             <h5 className="font-bold">Total Revenue</h5>
             <h3 className="text-3xl font-extrabold">
-              {AdminDashboardData?.totalRevenue.toFixed(2)}
+              {isLoading ? (
+                <Loader2 />
+              ) : (
+                AdminDashboardData?.totalRevenue.toFixed(2)
+              )}
             </h3>
           </div>
+
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">
             <h5 className="font-bold">Total Profit</h5>
             <h3 className="text-3xl font-extrabold">
-              {AdminDashboardData?.totalProfit.toFixed(2)}
+              {isLoading ? (
+                <Loader2 />
+              ) : (
+                AdminDashboardData?.totalProfit.toFixed(2)
+              )}
             </h3>
           </div>
+
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">
             <h5 className="font-bold">Online Technicians</h5>
             <h3 className="text-3xl font-extrabold">
-              {AdminDashboardData?.activeTechnicians}
+              {isLoading ? <Loader2 /> : AdminDashboardData?.activeTechnicians}
             </h3>
           </div>
+
           <div className="p-3 border border-gray-400 hover:border-primaryblue hover:shadow-lg rounded-xl">
             <h5 className="font-bold">Completed Bookings</h5>
             <h3 className="text-3xl font-extrabold">
-              {AdminDashboardData?.totalCompletedBookings}
+              {isLoading ? (
+                <Loader2 />
+              ) : (
+                AdminDashboardData?.totalCompletedBookings
+              )}
             </h3>
           </div>
         </div>

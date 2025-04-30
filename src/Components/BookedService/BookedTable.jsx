@@ -20,6 +20,7 @@ import {
   setRatingModalOpen,
   setUserBookingModalOpen,
 } from "@/Redux/Slices/uiSlice";
+import Loader1 from "../Loader/Loader1";
 
 export const StatusBadge = ({ status }) => {
   switch (status) {
@@ -106,12 +107,15 @@ const BookedTable = () => {
     (state) => state.ui
   );
   const dispatch = useDispatch();
-  const { data: userBookingData, refetch: userBookingRefetch } = useQuery({
+
+  const {
+    data: userBookingData,
+    refetch: userBookingRefetch,
+    isLoading, // <-- add this
+  } = useQuery({
     queryKey: ["userBookings"],
     queryFn: () => getBookings(),
   });
-  console.log(userBookingData);
-  console.log(bookingForRating);
 
   return (
     <Table className="">
@@ -120,35 +124,34 @@ const BookedTable = () => {
           <TableHead>Device</TableHead>
           <TableHead>Service</TableHead>
           <TableHead>Date</TableHead>
-          {/* <TableHead>Repair Type</TableHead> */}
           <TableHead>Status</TableHead>
           <TableHead>Technician</TableHead>
           <TableHead>Rate Technician</TableHead>
           <TableHead>Payment Status</TableHead>
-
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
-      {userBookingData?.data?.length > 0 ? (
-        <TableBody>
-          {userBookingData?.data?.map((booking) => (
+
+      <TableBody>
+        {isLoading ? (
+          <TableRow>
+            <TableCell colSpan={8} className="text-center py-6">
+              <Loader1 />
+            </TableCell>
+          </TableRow>
+        ) : userBookingData?.data?.length > 0 ? (
+          userBookingData?.data?.map((booking) => (
             <TableRow key={booking?.bookingID}>
               <TableCell>{booking?.deviceName}</TableCell>
               <TableCell>{booking?.serviceName}</TableCell>
               <TableCell>
                 {new Date(booking?.createdAt).toLocaleDateString()}
               </TableCell>
-              {/* <TableCell>
-                  <span className="text-white text-xs font-medium  bg-primaryblue p-1 px-2 rounded-full">
-                    On-Site
-                  </span>
-                </TableCell> */}
-              <TableCell className=" ">
+              <TableCell>
                 <StatusBadge status={booking?.bookingStatus} />
               </TableCell>
               <TableCell>{booking?.technicianName}</TableCell>
               <TableCell>
-                {/* Rate modal */}
                 {booking?.bookingStatus == "Completed" && (
                   <>
                     <button
@@ -177,15 +180,13 @@ const BookedTable = () => {
                 )}
               </TableCell>
               <TableCell>{booking?.paymentStatus}</TableCell>
-
               <TableCell>
-                {/* view modal */}
                 <button
                   onClick={() => {
                     setSelectedBookingId(booking?.bookingID);
                     dispatch(setUserBookingModalOpen());
                   }}
-                  className=" text-primary px-2 py-1 rounded font-light text-primaryblue"
+                  className="text-primary px-2 py-1 rounded font-light text-primaryblue"
                 >
                   View
                 </button>
@@ -203,11 +204,17 @@ const BookedTable = () => {
                 </Modal>
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      ) : (
-        <h6 className="mt-2 text-lg">No bookings available</h6>
-      )}
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={8} className="text-center py-6">
+              <span className="text-gray-500 text-sm">
+                No bookings available
+              </span>
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
     </Table>
   );
 };

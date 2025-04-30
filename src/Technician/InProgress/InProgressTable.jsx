@@ -31,6 +31,7 @@ import {
   setComplitionSummaryModalOpen,
 } from "@/Redux/Slices/uiSlice";
 import { getBookingById } from "@/Api/bookingApi";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const InProgressTable = () => {
   const { user } = useSelector((state) => state.user);
@@ -45,6 +46,7 @@ const InProgressTable = () => {
   const {
     data: inProgressOfTechnicianData,
     refetch: inProgressOfTechnicianRefetch,
+    isLoading,
   } = useQuery({
     queryKey: ["inProgressOfTechnician"], // unique key
     queryFn: () =>
@@ -103,84 +105,97 @@ const InProgressTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {inProgressOfTechnicianData
-            ? inProgressOfTechnicianData?.data.map((service) => (
-                <TableRow>
-                  <TableCell>{service?.bookingID}</TableCell>
-                  <TableCell>{service?.customerName}</TableCell>
-                  <TableCell>{service?.deviceName}</TableCell>
-                  <TableCell className=" ">{service?.serviceName}</TableCell>
-                  <TableCell>
-                    {new Date(service?.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>{service?.street}</TableCell>
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center py-6">
+                <div className="flex justify-center items-center">
+                  <Loader1 />
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : inProgressOfTechnicianData?.data?.length > 0 ? (
+            inProgressOfTechnicianData.data.map((service) => (
+              <TableRow key={service.bookingID}>
+                <TableCell>{service?.bookingID}</TableCell>
+                <TableCell>{service?.customerName}</TableCell>
+                <TableCell>{service?.deviceName}</TableCell>
+                <TableCell>{service?.serviceName}</TableCell>
+                <TableCell>
+                  {new Date(service?.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{service?.street}</TableCell>
+                <TableCell>
+                  <StatusBadge status={service?.bookingStatus} />
+                </TableCell>
+                <TableCell>
+                  {service?.bookingStatus !== "Completed" &&
+                    service?.bookingStatus !== "Rejected" && (
+                      <div className="flex">
+                        <button
+                          onClick={() => {
+                            setSelectedUpdatingService(service.bookingID);
+                            dispatch(setChangeServiceStatusModalOpen());
+                          }}
+                          className="whitespace-nowrap btn-primary-gray p-1 items-center flex"
+                        >
+                          <MdAccessTime className="mr-2" />
+                          Change Status
+                        </button>
+                        <Modal
+                          isOpen={changeServiceStatusModalOpen}
+                          onClose={() => {
+                            setSelectedUpdatingService(null);
+                            dispatch(setChangeServiceStatusModalOpen());
+                          }}
+                          head="Update Repair Status"
+                        >
+                          <UpdateStatus
+                            setSelectedUpdatingService={
+                              setSelectedUpdatingService
+                            }
+                            selectedUpdatingService={selectedUpdatingService}
+                            updateStatus={updateStatus}
+                            statuses={statuses}
+                            setCurrentStatus={setCurrentStatus}
+                            currentStatus={currentStatus}
+                          />
+                        </Modal>
 
-                  <TableCell>
-                    <StatusBadge status={service?.bookingStatus} />
-                  </TableCell>
-                  <TableCell className="">
-                    {service?.bookingStatus !== "Completed" &&
-                      service?.bookingStatus !== "Rejected" && (
-                        <div className="flex">
-                          <button
-                            onClick={() => {
-                              setSelectedUpdatingService(service.bookingID);
-                              dispatch(setChangeServiceStatusModalOpen());
-                            }}
-                            className="whitespace-nowrap btn-primary-gray p-1 items-center flex"
-                          >
-                            <MdAccessTime className="mr-2" />
-                            Change Status
-                          </button>
-                          <Modal
-                            isOpen={changeServiceStatusModalOpen}
-                            onClose={() => {
-                              setSelectedUpdatingService(null);
-                              dispatch(setChangeServiceStatusModalOpen());
-                            }}
-                            head={`Update Repair Status`}
-                          >
-                            <UpdateStatus
-                              setSelectedUpdatingService={
-                                setSelectedUpdatingService
-                              }
-                              selectedUpdatingService={selectedUpdatingService}
-                              updateStatus={updateStatus}
-                              statuses={statuses}
-                              setCurrentStatus={setCurrentStatus}
-                              currentStatus={currentStatus}
-                            />
-                          </Modal>
-
-                          <button
-                            onClick={() => {
-                              setSelectedAddSpare(service?.bookingID);
-                              dispatch(setAddSpareModalOpen());
-                            }}
-                            className="whitespace-nowrap btn-primary-gray p-1 ml-2  items-center flex"
-                          >
-                            <BsBoxSeam className="mr-2" />
-                            Add Spares
-                          </button>
-                          <Modal
-                            isOpen={addSpareModalOpen}
-                            onClose={() => {
-                              setSelectedAddSpare(null);
-                              dispatch(setAddSpareModalOpen());
-                            }}
-                            head={`Add Spare Parts`}
-                          >
-                            <AddSpare
-                              bookingId={selectedAddSpare}
-                              setSelectedAddSpare={setSelectedAddSpare}
-                            />
-                          </Modal>
-                        </div>
-                      )}
-                  </TableCell>
-                </TableRow>
-              ))
-            : "No in progress jobs"}
+                        <button
+                          onClick={() => {
+                            setSelectedAddSpare(service.bookingID);
+                            dispatch(setAddSpareModalOpen());
+                          }}
+                          className="whitespace-nowrap btn-primary-gray p-1 ml-2 items-center flex"
+                        >
+                          <BsBoxSeam className="mr-2" />
+                          Add Spares
+                        </button>
+                        <Modal
+                          isOpen={addSpareModalOpen}
+                          onClose={() => {
+                            setSelectedAddSpare(null);
+                            dispatch(setAddSpareModalOpen());
+                          }}
+                          head="Add Spare Parts"
+                        >
+                          <AddSpare
+                            bookingId={selectedAddSpare}
+                            setSelectedAddSpare={setSelectedAddSpare}
+                          />
+                        </Modal>
+                      </div>
+                    )}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center py-6 text-gray-500">
+                No in-progress jobs found.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       <Modal

@@ -7,15 +7,19 @@ import { useQuery } from "@tanstack/react-query";
 import { getTechnicianDashboardData } from "@/Api/technicianApi";
 
 const TDashboard = () => {
-  const { data: technicianDashboardData } = useQuery({
+  const { data: technicianDashboardData, isLoading } = useQuery({
     queryKey: ["technicianDashboard"],
     queryFn: () => getTechnicianDashboardData(),
     select: (data) => data?.data,
   });
   return (
     <div className="container mx-auto">
-      <TechnicianOverview technicanOverview={technicianDashboardData} />
+      <TechnicianOverview
+        isLoading={isLoading}
+        technicanOverview={technicianDashboardData}
+      />
       <TechnicianChart
+        isLoading={isLoading}
         chartData={technicianDashboardData?.technicianRevenueChartData}
       />
     </div>

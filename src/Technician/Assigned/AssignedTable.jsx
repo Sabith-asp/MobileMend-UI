@@ -26,6 +26,7 @@ import {
 } from "@/Redux/Slices/uiSlice";
 import toast from "react-hot-toast";
 import { MdNotificationsActive } from "react-icons/md";
+import Loader1 from "@/Components/Loader/Loader1";
 
 const AssignedTable = () => {
   const { user } = useSelector((state) => state.user);
@@ -173,197 +174,118 @@ const AssignedTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {/* {notifications.map((service) => (
+          {isLoading ? (
             <TableRow>
-              <TableCell>{service?.bookingID}</TableCell>
-              <TableCell>{service?.customerName}</TableCell>
-              <TableCell>{service?.deviceName}</TableCell>
-              <TableCell>{service?.issue}</TableCell>
-              <TableCell className=" ">
-                {new Date(service?.createdAt).toLocaleDateString()}
-              </TableCell>
-              <TableCell>{service?.street}</TableCell>
-              <TableCell className="flex">
-                <div className="">
-                  <button
-                    onClick={() => {
-                      setSelectedService(service);
-                      dispatch(setAcceptServiceModalOpen());
-                    }}
-                    className="text-xs flex items-center btn-primary-gray"
-                  >
-                    <FaCheck />
-                    Accept
-                  </button>
-                  <Modal
-                    isOpen={acceptServiceModalOpen}
-                    onClose={() => {
-                      dispatch(setAcceptServiceModalOpen());
-                      setSelectedService(null);
-                    }}
-                    head={`Service Request Details`}
-                  >
-                    <AcceptService
-                      assignedForTechncianRefetch={assignedForTechncianRefetch}
-                      serviceDetails={selectedService}
-                    />
-                  </Modal>
-                </div>
-                <div>
-                  <button
-                    onClick={() => {
-                      setSelectedRejectService(service.bookingID);
-                      dispatch(setRejectServiceModalOpen());
-                    }}
-                    className="bg-red-600 items-center flex text-white border-0 ml-3 text-xs btn-primary-gray"
-                  >
-                    <RxCross2 />
-                    Reject
-                  </button>
-                  <Modal
-                    isOpen={rejectServiceModalOpen}
-                    onClose={() => {
-                      setSelectedRejectService(null);
-                      dispatch(setRejectServiceModalOpen());
-                    }}
-                    head={`Reject Service`}
-                  >
-                    <h6>Reason for Rejection</h6>
-                    <Textarea
-                      value={reason}
-                      onChange={(e) => {
-                        setReason(e.target.value);
-                      }}
-                      placeholder="Write your reason here..."
-                      className="w-full h-24 mt-3 border-gray-300 focus:ring-2 focus:ring-blue-500"
-                    />
-                    <div className="pt-3 float-end">
-                      <button
-                        onClick={() => {
-                          setSelectedRejectService(null);
-                          dispatch(setRejectServiceModalOpen());
-                        }}
-                        className="btn-primary-gray"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() =>
-                          rejectService({
-                            technicianId: user.technicianId,
-                            bookingID: selectedRejectService,
-                            status: false,
-                            rejectionReason: reason,
-                          })
-                        }
-                        className="btn-primary-blue bg-red-600"
-                      >
-                        Reject Service
-                      </button>
-                    </div>
-                  </Modal>
+              <TableCell colSpan={7} className="text-center py-6">
+                <div className="flex justify-center items-center">
+                  <Loader1 />
                 </div>
               </TableCell>
             </TableRow>
-          ))} */}
+          ) : assignedForTechncianData?.data.length > 0 ? (
+            assignedForTechncianData?.data.map((service) => (
+              <TableRow key={service.bookingID}>
+                <TableCell>{service?.bookingID}</TableCell>
+                <TableCell>{service?.customerName}</TableCell>
+                <TableCell>{service?.deviceName}</TableCell>
+                <TableCell>{service?.issue}</TableCell>
+                <TableCell>
+                  {new Date(service?.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{service?.street}</TableCell>
+                <TableCell className="flex">
+                  {/* Accept Button */}
+                  <div>
+                    <button
+                      onClick={() => {
+                        setSelectedService(service);
+                        dispatch(setAcceptServiceModalOpen());
+                      }}
+                      className="text-xs flex items-center btn-primary-gray"
+                    >
+                      <FaCheck />
+                      Accept
+                    </button>
+                    <Modal
+                      isOpen={acceptServiceModalOpen}
+                      onClose={() => {
+                        dispatch(setAcceptServiceModalOpen());
+                        setSelectedService(null);
+                      }}
+                      head={`Service Request Details`}
+                    >
+                      <AcceptService
+                        assignedForTechncianRefetch={
+                          assignedForTechncianRefetch
+                        }
+                        serviceDetails={selectedService}
+                      />
+                    </Modal>
+                  </div>
 
-          {assignedForTechncianData?.data.length > 0
-            ? assignedForTechncianData?.data.map((service) => (
-                <TableRow>
-                  <TableCell>{service?.bookingID}</TableCell>
-                  <TableCell>{service?.customerName}</TableCell>
-                  <TableCell>{service?.deviceName}</TableCell>
-                  <TableCell>{service?.issue}</TableCell>
-                  <TableCell className=" ">
-                    {new Date(service?.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>{service?.street}</TableCell>
-                  <TableCell className="flex">
-                    <div className="">
-                      <button
-                        onClick={() => {
-                          setSelectedService(service);
-                          dispatch(setAcceptServiceModalOpen());
-                        }}
-                        className="text-xs flex items-center btn-primary-gray"
-                      >
-                        <FaCheck />
-                        Accept
-                      </button>
-                      <Modal
-                        isOpen={acceptServiceModalOpen}
-                        onClose={() => {
-                          dispatch(setAcceptServiceModalOpen());
-                          setSelectedService(null);
-                        }}
-                        head={`Service Request Details`}
-                      >
-                        <AcceptService
-                          assignedForTechncianRefetch={
-                            assignedForTechncianRefetch
-                          }
-                          serviceDetails={selectedService}
-                        />
-                      </Modal>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => {
-                          setSelectedRejectService(service.bookingID);
-                          dispatch(setRejectServiceModalOpen());
-                        }}
-                        className="bg-red-600 items-center flex text-white border-0 ml-3 text-xs btn-primary-gray"
-                      >
-                        <RxCross2 />
-                        Reject
-                      </button>
-                      <Modal
-                        isOpen={rejectServiceModalOpen}
-                        onClose={() => {
-                          setSelectedRejectService(null);
-                          dispatch(setRejectServiceModalOpen());
-                        }}
-                        head={`Reject Service`}
-                      >
-                        <h6>Reason for Rejection</h6>
-                        <Textarea
-                          value={reason}
-                          onChange={(e) => {
-                            setReason(e.target.value);
+                  {/* Reject Button */}
+                  <div>
+                    <button
+                      onClick={() => {
+                        setSelectedRejectService(service.bookingID);
+                        dispatch(setRejectServiceModalOpen());
+                      }}
+                      className="bg-red-600 items-center flex text-white border-0 ml-3 text-xs btn-primary-gray"
+                    >
+                      <RxCross2 />
+                      Reject
+                    </button>
+                    <Modal
+                      isOpen={rejectServiceModalOpen}
+                      onClose={() => {
+                        setSelectedRejectService(null);
+                        dispatch(setRejectServiceModalOpen());
+                      }}
+                      head={`Reject Service`}
+                    >
+                      <h6>Reason for Rejection</h6>
+                      <Textarea
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        placeholder="Write your reason here..."
+                        className="w-full h-24 mt-3 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                      />
+                      <div className="pt-3 float-end">
+                        <button
+                          onClick={() => {
+                            setSelectedRejectService(null);
+                            dispatch(setRejectServiceModalOpen());
                           }}
-                          placeholder="Write your reason here..."
-                          className="w-full h-24 mt-3 border-gray-300 focus:ring-2 focus:ring-blue-500"
-                        />
-                        <div className="pt-3 float-end">
-                          <button
-                            onClick={() => {
-                              setSelectedRejectService(null);
-                              dispatch(setRejectServiceModalOpen());
-                            }}
-                            className="btn-primary-gray"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() =>
-                              rejectService({
-                                technicianId: user.technicianId,
-                                bookingID: service.bookingID,
-                                status: false,
-                                rejectionReason: reason,
-                              })
-                            }
-                            className="btn-primary-blue bg-red-600"
-                          >
-                            Reject Service
-                          </button>
-                        </div>
-                      </Modal>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            : "no data"}
+                          className="btn-primary-gray"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() =>
+                            rejectService({
+                              technicianId: user.technicianId,
+                              bookingID: service.bookingID,
+                              status: false,
+                              rejectionReason: reason,
+                            })
+                          }
+                          className="btn-primary-blue bg-red-600"
+                        >
+                          Reject Service
+                        </button>
+                      </div>
+                    </Modal>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-6">
+                No data found
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>
