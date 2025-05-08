@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import { setUser } from "@/Redux/Slices/userSlice";
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [error, setError] = useState([]);
   // Initialize Formik
   const formik = useFormik({
     initialValues: {
@@ -60,6 +61,8 @@ const Login = () => {
         console.log(response);
         navigate("/");
       } catch (error) {
+        console.log(error);
+        setError(error);
         toast.error(error.response.data.message);
       }
     },
@@ -121,6 +124,8 @@ const Login = () => {
           {formik.isSubmitting ? "Logging in..." : "Log in"}
         </button>
       </form>
+
+      <div>{JSON.stringify(error, null, 2)}</div>
 
       <div className="bg-blue-200 p-4 text-sm text-center mt-4 rounded-lg shadow-md">
         <p>
